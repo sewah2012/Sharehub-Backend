@@ -13,6 +13,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping(value = "/auth")
 @RequiredArgsConstructor
@@ -23,8 +25,8 @@ public class AuthController {
     private final TokenProvider tokenProvider;
 
     @PostMapping("/signup")
-    ResponseEntity<String> signup(@RequestBody CreateUserDto user){
-        return ResponseEntity.ok(userService.addNewUser(user));
+    ResponseEntity<String> signup(@RequestBody CreateUserDto user, HttpServletRequest req) throws Exception {
+        return ResponseEntity.ok(userService.addNewUser(user,getSiteUrl(req)));
     }
 
     @PostMapping("/login")
@@ -40,5 +42,10 @@ public class AuthController {
     @GetMapping("/userdetails/{userId}")
     ResponseEntity<AppUserDto> userDetailsgetUSerDetails(@PathVariable("userId") Long userId) throws Exception {
         return userService.getUser(userId);
+    }
+
+    private String getSiteUrl(HttpServletRequest request){
+        String siteUrl = request.getRequestURL().toString();
+        return siteUrl.replace(request.getServletPath(), "");
     }
 }

@@ -1,6 +1,8 @@
 package com.luslusdawmpfe.PFEBackent.entities;
 
 import lombok.*;
+import net.bytebuddy.utility.RandomString;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -30,6 +32,9 @@ public class AppUser implements Serializable {
     @Column(name = "username", unique = true, nullable = false)
     private String username;
     private String password;
+    @Column(name = "verification_code", length =64)
+    private String verificationCode;
+    private Boolean isEnabled;
 
 //    @Builder.Default
 //    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
