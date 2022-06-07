@@ -1,5 +1,6 @@
 package com.luslusdawmpfe.PFEBackent.dtos;
 
+import com.luslusdawmpfe.PFEBackent.entities.Role;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -18,5 +19,5 @@ public class AppUserDto implements Serializable {
     private final String website;
     private final String imageUrl;
     private final String username;
-    private final Set<String> roles;
+    private final Set<Role> roles;
 }

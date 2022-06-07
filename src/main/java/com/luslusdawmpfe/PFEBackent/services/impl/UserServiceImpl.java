@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                                     .email(createUserDto.getEmail())
                                     .website(createUserDto.getWebsite())
                                     .imageUrl(createUserDto.getImageUrl())
-                                    .roles(Set.of(Roles.APP_USER))
+                                    .roles(Set.of(Role.builder().name("APP_ADMIN").description("Admin User").build()))
                                     .build()
                             );
                         }
@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return ResponseEntity.ok(user);
     }
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
             AppUser user = Optional.of(appUserRepo.findUserByUsername(username))
                     .orElseThrow(()->new UsernameNotFoundException("User not found!"));
 

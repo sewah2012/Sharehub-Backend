@@ -31,19 +31,13 @@ public class AppUser implements Serializable {
     private String username;
     private String password;
 
-    @Builder.Default
-    @ElementCollection(targetClass=Roles.class)
-    private Set<Roles> roles = new HashSet<>();
-
-//    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinTable(name = "APP_USER",
-//            joinColumns = {
-//                    @JoinColumn(name = "id")
-//            },
-//            inverseJoinColumns = {
-//                    @JoinColumn(name = "id") })
 //    @Builder.Default
+//    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 //    private Set<Role> roles = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>();
 
 
 }
