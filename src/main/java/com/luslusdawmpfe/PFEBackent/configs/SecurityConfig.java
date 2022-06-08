@@ -2,6 +2,7 @@ package com.luslusdawmpfe.PFEBackent.configs;
 
 import com.luslusdawmpfe.PFEBackent.services.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,9 +17,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
-        prePostEnabled = true, // (1)
-        securedEnabled = true, // (2)
-        jsr250Enabled = true) // (3)
+        order = 0,
+        prePostEnabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true,
+        mode = AdviceMode.PROXY
+)
 
 @RequiredArgsConstructor
 @SuppressWarnings("deprecation")

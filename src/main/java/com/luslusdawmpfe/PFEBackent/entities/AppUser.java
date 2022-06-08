@@ -9,9 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Builder
@@ -40,6 +38,7 @@ public class AppUser implements UserDetails, Serializable {
     @Column(name = "verification_code", length =64)
     private String verificationCode;
     private Boolean isEnabled;
+    private Boolean isProfileComplete;
 
 //    @Builder.Default
 //    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -47,13 +46,13 @@ public class AppUser implements UserDetails, Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
-    private Set<Role> roles = new HashSet<>();
+    private List<Role> roles = new ArrayList<>();
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles
-                .stream().map(role -> new SimpleGrantedAuthority(role.toString())).collect(Collectors.toList());
+                .stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
 
     }
 
