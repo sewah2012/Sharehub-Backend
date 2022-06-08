@@ -5,6 +5,7 @@ import com.luslusdawmpfe.PFEBackent.dtos.CreateUserDto;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.entities.Role;
 import com.luslusdawmpfe.PFEBackent.mappers.AppUserMapper;
+import com.luslusdawmpfe.PFEBackent.mappers.RoleMapper;
 import com.luslusdawmpfe.PFEBackent.repos.AppUserRepo;
 import com.luslusdawmpfe.PFEBackent.services.UserService;
 import com.luslusdawmpfe.PFEBackent.utils.EmailSender;
@@ -36,31 +37,34 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     private AppUserMapper mapper;
     @Autowired
+    private RoleMapper roleMapper;
+    @Autowired
     private EmailSender emailSender;
 
     @Override
     public String addNewUser(CreateUserDto createUserDto, String siteUrl) throws Exception {
-
-        if(appUserRepo.findUserByEmail(createUserDto.getEmail()).isPresent()) throw new Exception("User already existing!");
-
-        String encryptedPassword = passwordEncoder.encode(createUserDto.getPassword());
         log.info("saving user to db");
-       AppUser user = appUserRepo.save(AppUser.builder()
-                .username(createUserDto.getUsername())
-                .password(encryptedPassword)
-                .firstName(createUserDto.getFirstName())
-                .lastName(createUserDto.getLastName())
-                .nickname(createUserDto.getNickname())
-                .dateOfBirth(createUserDto.getDateOfBirth())
-                .address(createUserDto.getAddress())
-                .email(createUserDto.getEmail())
-                .website(createUserDto.getWebsite())
-                .imageUrl(createUserDto.getImageUrl())
-                        .verificationCode(RandomString.make(64))
-                        .isEnabled(false)
-                .roles(Set.of(Role.builder().name("APP_ADMIN").description("Admin User").build()))
-                .build()
-        );
+        log.info("User email: "+ createUserDto.getEmail());
+        if(appUserRepo.findUserByEmail(createUserDto.getEmail()).isPresent()) throw new Exception("USer alread exist in system");
+        var user = appUserRepo.save(
+                        AppUser.builder()
+                                .username(createUserDto.getUsername())
+                                .password(passwordEncoder.encode(createUserDto.getPassword()))
+                                .firstName(createUserDto.getFirstName())
+                                .lastName(createUserDto.getLastName())
+                                .nickname(createUserDto.getNickname())
+                                .dateOfBirth(createUserDto.getDateOfBirth())
+                                .address(createUserDto.getAddress())
+                                .email(createUserDto.getEmail())
+                                .website(createUserDto.getWebsite())
+                                .imageUrl(createUserDto.getImageUrl())
+                                .verificationCode(RandomString.make(64))
+                                .isEnabled(false)
+                                .roles(createUserDto.getRoles().stream().map(
+                                        (roleDto)->roleMapper.roleDtoToRole(roleDto)
+                                ).collect(Collectors.toList()))
+                                .build()
+                );
         log.info("initiating email sending");
         emailSender.sendEmail(user, siteUrl);
         return "A activation email has been sent to your email address.";
@@ -70,11 +74,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public String verifyEmail(String verificationCode) throws Exception {
      appUserRepo.findUserByVerificationCode(verificationCode).map(
                 (u)->{
+                    log.info("Found user: "+u.getVerificationCode());
                     u.setVerificationCode(null);
                     u.setIsEnabled(true);
                    return appUserRepo.save(u);
                 }
         ).orElseThrow(()->new Exception("Verification failed"));
+
         return "Verification completed successfully";
     }
 

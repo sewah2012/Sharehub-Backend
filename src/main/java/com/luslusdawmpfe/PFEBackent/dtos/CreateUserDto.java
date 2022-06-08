@@ -3,6 +3,7 @@ package com.luslusdawmpfe.PFEBackent.dtos;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -17,4 +18,5 @@ public class CreateUserDto {
     private final String imageUrl;
     private final String username;
     private final String password;
+    private final List<RoleDto> roles;
 }

@@ -1,5 +1,4 @@
 package com.luslusdawmpfe.PFEBackent.controllers;
-
 import com.luslusdawmpfe.PFEBackent.configs.TokenProvider;
 import com.luslusdawmpfe.PFEBackent.dtos.AppUserDto;
 import com.luslusdawmpfe.PFEBackent.dtos.CreateUserDto;
@@ -8,6 +7,7 @@ import com.luslusdawmpfe.PFEBackent.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -43,8 +43,10 @@ public class AuthController {
         ).body("User successfully logged in. Access token provided in header");
     }
 
+
+    @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
     @GetMapping("/userdetails/{userId}")
-    ResponseEntity<AppUserDto> userDetailsgetUSerDetails(@PathVariable("userId") Long userId) throws Exception {
+    ResponseEntity<AppUserDto> getUserDetails(@PathVariable("userId") Long userId) throws Exception {
         return userService.getUser(userId);
     }
 

@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -19,5 +20,5 @@ public class AppUserDto implements Serializable {
     private final String website;
     private final String imageUrl;
     private final String username;
-    private final Set<Role> roles;
+    private final List<Role> roles;
 }
