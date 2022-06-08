@@ -67,6 +67,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public String verifyEmail(String verificationCode) throws Exception {
+     appUserRepo.findUserByVerificationCode(verificationCode).map(
+                (u)->{
+                    u.setVerificationCode(null);
+                    u.setIsEnabled(true);
+                   return appUserRepo.save(u);
+                }
+        ).orElseThrow(()->new Exception("Verification failed"));
+        return "Verification completed successfully";
+    }
+
+    @Override
     public ResponseEntity<AppUserDto> getUser(Long userId) throws Exception {
         AppUserDto user = appUserRepo.findById(userId)
                 .map((x)->mapper.mapToAppUserDto(x))
@@ -75,21 +87,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
-            AppUser user = Optional.of(appUserRepo.findUserByUsername(username))
+           return Optional.of(appUserRepo.findUserByUsername(username))
                     .orElseThrow(()->new UsernameNotFoundException("User not found!"));
 
-        List<SimpleGrantedAuthority> roles = user.getRoles()
-                .stream().map(role -> new SimpleGrantedAuthority(role.toString())).collect(Collectors.toList());
-
-        return new User(
-                user.getUsername(),
-                user.getPassword(),
-                user.getIsEnabled(),
-                false,
-                false,
-                false,
-                roles
-        );
     }
 
 

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface UserService {
     String addNewUser(CreateUserDto user, String siteUrl) throws Exception;
+    String verifyEmail(String verificationCode) throws Exception;
     ResponseEntity<AppUserDto> getUser(Long userId) throws Exception;
 
 

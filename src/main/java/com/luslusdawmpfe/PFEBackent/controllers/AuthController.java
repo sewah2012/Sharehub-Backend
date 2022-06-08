@@ -6,7 +6,6 @@ import com.luslusdawmpfe.PFEBackent.dtos.CreateUserDto;
 import com.luslusdawmpfe.PFEBackent.dtos.LoginDto;
 import com.luslusdawmpfe.PFEBackent.services.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.var;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +26,11 @@ public class AuthController {
     @PostMapping("/signup")
     ResponseEntity<String> signup(@RequestBody CreateUserDto user, HttpServletRequest req) throws Exception {
         return ResponseEntity.ok(userService.addNewUser(user,getSiteUrl(req)));
+    }
+
+    @GetMapping("/verify")
+    ResponseEntity<String> verifyEmail(@RequestParam("code") String verificationCode) throws Exception {
+        return ResponseEntity.ok(userService.verifyEmail(verificationCode));
     }
 
     @PostMapping("/login")

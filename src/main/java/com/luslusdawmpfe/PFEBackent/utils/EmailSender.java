@@ -44,7 +44,7 @@ public class EmailSender {
     helper.setSubject(subject);
 
     content = content.replace("[[name]]",user.getFirstName());
-    String verifyURL = siteUrl+"/verify?code="+user.getVerificationCode();
+    String verifyURL = siteUrl+"/auth/verify?code="+user.getVerificationCode();
     content = content.replace("[[URL]]",verifyURL);
 
     helper.setText(content, true);
