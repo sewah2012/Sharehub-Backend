@@ -14,6 +14,20 @@ import java.util.Objects;
 public class GlobalExceptionHandler {
     public static final String DEFAULT_INTERNAL_SERVER_ERROR_MESSAGE = "An error occured while processing request";
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<Object> entityNotFoundExceptionHandler(Exception ex){
+        log.error(ex.getMessage(), ex);
+        return buildErrorResponse(Objects.nonNull(ex.getMessage()) ? ex.getMessage() : DEFAULT_INTERNAL_SERVER_ERROR_MESSAGE, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EntityAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.ALREADY_REPORTED)
+    public ResponseEntity<Object> entityAlreadyExistException(Exception ex){
+        log.error(ex.getMessage(), ex);
+        return buildErrorResponse(Objects.nonNull(ex.getMessage()) ? ex.getMessage() : DEFAULT_INTERNAL_SERVER_ERROR_MESSAGE, HttpStatus.ALREADY_REPORTED);
+    }
+
     @ExceptionHandler({Throwable.class, Exception.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> internalExceptionHandler(Exception ex){
