@@ -3,6 +3,8 @@ import com.luslusdawmpfe.PFEBackent.configs.TokenProvider;
 import com.luslusdawmpfe.PFEBackent.dtos.AppUserDto;
 import com.luslusdawmpfe.PFEBackent.dtos.CreateUserDto;
 import com.luslusdawmpfe.PFEBackent.dtos.LoginDto;
+import com.luslusdawmpfe.PFEBackent.dtos.SignupDto;
+import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +29,7 @@ public class AuthController {
     private final TokenProvider tokenProvider;
 
     @PostMapping("/signup")
-    ResponseEntity<String> signup(@RequestBody CreateUserDto user, HttpServletRequest req) throws Exception {
+    ResponseEntity<String> signup(@RequestBody SignupDto user, HttpServletRequest req) throws Exception {
         return ResponseEntity.ok(userService.addNewUser(user,getSiteUrl(req)));
     }
 
@@ -45,11 +48,17 @@ public class AuthController {
         return ResponseEntity.status(201).body(resp);
     }
 
+    @PreAuthorize("hasAnyAuthority('APP_ADMIN')")
+    @PostMapping("/createUser")
+    ResponseEntity<String> createUSer(@RequestBody CreateUserDto user) throws Exception {
+        return ResponseEntity.ok(userService.createUser(user));
+    }
+
 
     @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
-    @GetMapping("/userdetails/{userId}")
-    ResponseEntity<AppUserDto> getUserDetails(@PathVariable("userId") Long userId) throws Exception {
-        return userService.getUser(userId);
+    @GetMapping("/myDetails")
+    ResponseEntity<AppUserDto> loggedInUserDetails(@AuthenticationPrincipal AppUser user) throws Exception {
+        return userService.loggedInUserDetails(user);
     }
 
     private String getSiteUrl(HttpServletRequest request){

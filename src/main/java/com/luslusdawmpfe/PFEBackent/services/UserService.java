@@ -1,18 +1,20 @@
 package com.luslusdawmpfe.PFEBackent.services;
 import com.luslusdawmpfe.PFEBackent.dtos.AppUserDto;
 import com.luslusdawmpfe.PFEBackent.dtos.CreateUserDto;
+import com.luslusdawmpfe.PFEBackent.dtos.SignupDto;
+import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityAlreadyExistException;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 
 public interface UserService {
-    String addNewUser(CreateUserDto user, String siteUrl) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException, EntityAlreadyExistException;
+    String addNewUser(SignupDto user, String siteUrl) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException, EntityAlreadyExistException;
     String verifyEmail(String verificationCode) throws EntityNotFoundException;
-    ResponseEntity<AppUserDto> getUser(Long userId) throws EntityNotFoundException;
+    ResponseEntity<AppUserDto> loggedInUserDetails(@AuthenticationPrincipal AppUser user) throws EntityNotFoundException;
 
-
-
+    String createUser(CreateUserDto user) throws EntityAlreadyExistException;
 }
