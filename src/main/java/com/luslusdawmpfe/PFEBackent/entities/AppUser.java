@@ -2,6 +2,8 @@ package com.luslusdawmpfe.PFEBackent.entities;
 
 import lombok.*;
 import net.bytebuddy.utility.RandomString;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +19,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Data
 @Entity
-public class AppUser implements UserDetails, Serializable {
+public class AppUser extends DateAudit implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,6 +47,11 @@ public class AppUser implements UserDetails, Serializable {
 //    private Set<Role> roles = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JoinTable(
+            name = "app_user_roles",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "app_user_id"))
     @Builder.Default
     private List<Role> roles = new ArrayList<>();
 
@@ -75,4 +82,6 @@ public class AppUser implements UserDetails, Serializable {
     public boolean isEnabled() {
         return this.isEnabled;
     }
+
+
 }

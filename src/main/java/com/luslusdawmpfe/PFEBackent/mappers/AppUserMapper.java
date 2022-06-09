@@ -10,4 +10,5 @@ import org.springframework.context.annotation.Lazy;
 public interface AppUserMapper {
 
     AppUserDto mapToAppUserDto(AppUser user);
+    AppUser mapToAppUser(AppUserDto user);
 }

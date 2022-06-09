@@ -3,7 +3,8 @@ package com.luslusdawmpfe.PFEBackent.services.impl;
 import com.luslusdawmpfe.PFEBackent.dtos.AppUserDto;
 import com.luslusdawmpfe.PFEBackent.dtos.CreateUserDto;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
-import com.luslusdawmpfe.PFEBackent.entities.Role;
+import com.luslusdawmpfe.PFEBackent.exceptions.EntityAlreadyExistException;
+import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
 import com.luslusdawmpfe.PFEBackent.mappers.AppUserMapper;
 import com.luslusdawmpfe.PFEBackent.mappers.RoleMapper;
 import com.luslusdawmpfe.PFEBackent.repos.AppUserRepo;
@@ -13,14 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -42,11 +44,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private EmailSender emailSender;
 
     @Override
-    public String addNewUser(CreateUserDto createUserDto, String siteUrl) throws Exception {
+    @Transactional
+    public String addNewUser(CreateUserDto createUserDto, String siteUrl) throws MessagingException, UnsupportedEncodingException, EntityAlreadyExistException {
         log.info("saving user to db");
         log.info("User email: "+ createUserDto.getEmail());
-        if(appUserRepo.findUserByEmail(createUserDto.getEmail()).isPresent()) throw new Exception("USer alread exist in system");
-        var user = appUserRepo.save(
+        if(appUserRepo.findUserByEmail(createUserDto.getEmail()).isPresent()) throw new EntityAlreadyExistException("USer already exist in system");
+        AppUser user = appUserRepo.save(
                         AppUser.builder()
                                 .username(createUserDto.getUsername())
                                 .password(passwordEncoder.encode(createUserDto.getPassword()))
@@ -58,7 +61,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                                 .email(createUserDto.getEmail())
                                 .website(createUserDto.getWebsite())
                                 .imageUrl(createUserDto.getImageUrl())
-                                .verificationCode(RandomString.make(64))
+//                                .verificationCode(RandomString.make(64)) // revert to this for production
+                                .verificationCode("12345") //for testing purposes
                                 .isEnabled(false)
                                 .roles(createUserDto.getRoles().stream().map(
                                         (roleDto)->roleMapper.roleDtoToRole(roleDto)
@@ -71,7 +75,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public String verifyEmail(String verificationCode) throws Exception {
+    public String verifyEmail(String verificationCode) throws EntityNotFoundException {
      appUserRepo.findUserByVerificationCode(verificationCode).map(
                 (u)->{
                     log.info("Found user: "+u.getVerificationCode());
@@ -79,16 +83,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     u.setIsEnabled(true);
                    return appUserRepo.save(u);
                 }
-        ).orElseThrow(()->new Exception("Verification failed"));
+        ).orElseThrow(()->new EntityNotFoundException("Verification failed"));
 
         return "Verification completed successfully";
     }
 
     @Override
-    public ResponseEntity<AppUserDto> getUser(Long userId) throws Exception {
+    public ResponseEntity<AppUserDto> getUser(Long userId) throws EntityNotFoundException {
         AppUserDto user = appUserRepo.findById(userId)
                 .map((x)->mapper.mapToAppUserDto(x))
-                .orElseThrow(()->new Exception("User not found!"));
+                .orElseThrow(()->new EntityNotFoundException("User not found!"));
         return ResponseEntity.ok(user);
     }
     @Override

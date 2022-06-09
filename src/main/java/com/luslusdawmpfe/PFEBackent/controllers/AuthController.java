@@ -13,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/auth")
@@ -34,13 +36,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<String> login(@RequestBody LoginDto user){
+    ResponseEntity<Map<String, String>> login(@RequestBody LoginDto user){
         var auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
-        return ResponseEntity.status(201).header(
-                HttpHeaders.AUTHORIZATION,
-                tokenProvider.generateToken(auth)
-
-        ).body("User successfully logged in. Access token provided in header");
+        var token = tokenProvider.generateToken(auth);
+        Map<String, String> resp = new HashMap<>();
+        resp.put("message","User successfully logged in");
+        resp.put("token", token);
+        return ResponseEntity.status(201).body(resp);
     }
 
 
