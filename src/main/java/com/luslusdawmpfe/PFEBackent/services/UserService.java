@@ -10,11 +10,22 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 public interface UserService {
     String addNewUser(SignupDto user, String siteUrl) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException, EntityAlreadyExistException;
     String verifyEmail(String verificationCode) throws EntityNotFoundException;
     ResponseEntity<AppUserDto> loggedInUserDetails(@AuthenticationPrincipal AppUser user) throws EntityNotFoundException;
 
-    String createUser(CreateUserDto user) throws EntityAlreadyExistException;
+    String createUser(CreateUserDto user) throws EntityAlreadyExistException, MessagingException, UnsupportedEncodingException;
+
+    String forgetPassword(String email) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException;
+    String verifyPasswordReset(String verificationCode) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException;
+
+    String deleteUser(String username) throws EntityNotFoundException;
+
+    String resetPassword(String username) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException;
+
+    List<AppUserDto> listAllUsers();
+    AppUserDto getSingleUser(String username) throws EntityNotFoundException;
 }
