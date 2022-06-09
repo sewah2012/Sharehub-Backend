@@ -1,5 +1,6 @@
 package com.luslusdawmpfe.PFEBackent.controllers;
 
+import com.luslusdawmpfe.PFEBackent.dtos.AddExperienceDto;
 import com.luslusdawmpfe.PFEBackent.dtos.ExperienceDto;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.entities.Experience;
@@ -13,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/experience")
@@ -21,19 +24,19 @@ public class ExperienceController {
 
     @PreAuthorize("hasAnyAuthority({'APP_ADMIN','APP_USER'})")
     @PostMapping("/add")
-    public ResponseEntity<String> addNewExperience(@RequestBody ExperienceDto experience, @AuthenticationPrincipal AppUser user){
+    public ResponseEntity<String> addNewExperience(@RequestBody AddExperienceDto experience, @AuthenticationPrincipal AppUser user){
         return ResponseEntity.ok(experienceService.shareExperience(experience, user));
     }
 
     @PreAuthorize("hasAnyAuthority({'APP_ADMIN','APP_USER'})")
     @GetMapping("/list")
-    public ResponseEntity<Page<Experience>>listExperiences(
+    public ResponseEntity<List<ExperienceDto>>listExperiences(
             @RequestParam(name="pageNumber", required = false, defaultValue = "0") int pageNumber,
             @RequestParam(name="pageSize", required = false, defaultValue = "10") int pageSize,
             @RequestParam(name="sort", required = false, defaultValue = "creationDate") String sortBy
 
     ){
-        return ResponseEntity.ok(experienceService.listExperiences(pageNumber,pageSize,sortBy));
+        return experienceService.listExperiences(pageNumber,pageSize,sortBy);
     }
 
     @PreAuthorize("hasAnyAuthority({'APP_ADMIN','APP_USER'})")

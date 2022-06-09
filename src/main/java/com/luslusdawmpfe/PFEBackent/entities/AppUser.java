@@ -50,8 +50,8 @@ public class AppUser extends DateAudit implements UserDetails, Serializable {
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinTable(
             name = "app_user_roles",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "app_user_id"))
+            joinColumns = @JoinColumn(name = "app_user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     @Builder.Default
     private List<Role> roles = new ArrayList<>();
 
