@@ -5,7 +5,9 @@ import com.luslusdawmpfe.PFEBackent.dtos.CreateUserDto;
 import com.luslusdawmpfe.PFEBackent.dtos.LoginDto;
 import com.luslusdawmpfe.PFEBackent.dtos.SignupDto;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
+import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
 import com.luslusdawmpfe.PFEBackent.services.UserService;
+import com.luslusdawmpfe.PFEBackent.utils.AppAdminOrOwner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +17,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -48,11 +53,49 @@ public class AuthController {
         return ResponseEntity.status(201).body(resp);
     }
 
+    @GetMapping("/forgetPassword")
+    ResponseEntity<String> forgotPassword(@RequestParam("email") String email) throws MessagingException, UnsupportedEncodingException, EntityNotFoundException {
+        return ResponseEntity.ok(userService.forgetPassword(email));
+    }
+
+    @GetMapping("/verifyResetPasswordCode")
+    ResponseEntity<String> verifyResetPasswordCode(@RequestParam("code") String verificationCode) throws Exception {
+        return ResponseEntity.ok(userService.verifyPasswordReset(verificationCode));
+    }
+
     @PreAuthorize("hasAnyAuthority('APP_ADMIN')")
     @PostMapping("/createUser")
     ResponseEntity<String> createUSer(@RequestBody CreateUserDto user) throws Exception {
         return ResponseEntity.ok(userService.createUser(user));
     }
+    //TODO: delete user
+    @AppAdminOrOwner
+    @GetMapping("/deleteUser/{username}")
+    ResponseEntity<String> deleteUser(@PathVariable String username) throws EntityNotFoundException {
+        return ResponseEntity.ok(userService.deleteUser(username));
+    }
+
+    //TODO: ResetPassword
+    @AppAdminOrOwner
+    @GetMapping("/resetPassword/{username}")
+    ResponseEntity<String> resetPassword(@PathVariable String username) throws MessagingException, UnsupportedEncodingException, EntityNotFoundException {
+        return ResponseEntity.ok(userService.resetPassword(username));
+    }
+
+    @PreAuthorize("hasAnyAuthority('APP_ADMIN')")
+    @GetMapping("/listAppUsers")
+    ResponseEntity<List<AppUserDto>> listAppUsers() {
+        return ResponseEntity.ok(userService.listAllUsers());
+    }
+
+    @PreAuthorize("hasAnyAuthority('APP_ADMIN')")
+    @GetMapping("/getSingleUser/{username}")
+    ResponseEntity<AppUserDto> getSingleUser(@PathVariable String username) throws EntityNotFoundException {
+        return ResponseEntity.ok(userService.getSingleUser(username));
+    }
+
+
+
 
 
     @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
@@ -60,6 +103,8 @@ public class AuthController {
     ResponseEntity<AppUserDto> loggedInUserDetails(@AuthenticationPrincipal AppUser user) throws Exception {
         return userService.loggedInUserDetails(user);
     }
+
+    //TODO: userInfo
 
     private String getSiteUrl(HttpServletRequest request){
         String siteUrl = request.getRequestURL().toString();

@@ -14,6 +14,7 @@ import com.luslusdawmpfe.PFEBackent.repos.RoleRepo;
 import com.luslusdawmpfe.PFEBackent.services.UserService;
 import com.luslusdawmpfe.PFEBackent.utils.EmailSender;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -49,6 +50,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     private RoleRepo roleRepo;
 
+    final String DEFAULT_APP_USER_ROLE_PASSWORD = "sharehub123";
+
     @Override
     @Transactional
     public String addNewUser(SignupDto createUserDto, String siteUrl) throws MessagingException, UnsupportedEncodingException, EntityAlreadyExistException {
@@ -71,12 +74,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                                 .build()
                 );
         log.info("initiating email sending");
-        emailSender.sendEmail(user, siteUrl);
+        emailSender.sendVerificationEmail(user, siteUrl);
         return "A activation email has been sent to your email address.";
     }
 
     @Override
-    public String createUser(CreateUserDto createUserDto) throws EntityAlreadyExistException {
+    public String createUser(CreateUserDto createUserDto) throws EntityAlreadyExistException, MessagingException, UnsupportedEncodingException {
         log.info("saving user to db");
         log.info("User email: "+ createUserDto.getEmail());
         if(appUserRepo.findUserByEmail(createUserDto.getEmail()).isPresent()) throw new EntityAlreadyExistException("USer already exist in system");
@@ -89,10 +92,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 (r)-> roleRepo.findRoleByName(r.getName()).orElse(new Role(null,r.getName(),r.getDescription()))
         ).collect(Collectors.toList());
 
+        var randomPassword = RandomString.make(8);
+
         AppUser user = appUserRepo.save(
                 AppUser.builder()
                         .username(createUserDto.getUsername())
-                        .password(passwordEncoder.encode(createUserDto.getPassword()))
+                        .password(passwordEncoder.encode(DEFAULT_APP_USER_ROLE_PASSWORD)) // just for testing ... will change to random string
                         .firstName(createUserDto.getFirstName())
                         .lastName(createUserDto.getLastName())
                         .nickname(createUserDto.getNickname())
@@ -105,12 +110,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                         .roles(role)
                         .build()
         );
+
+        emailSender.sendUserCredentials(user, DEFAULT_APP_USER_ROLE_PASSWORD);
         return "Admin Create user successfully. login details are send to user email.";
     }
 
     @Override
     public String verifyEmail(String verificationCode) throws EntityNotFoundException {
-     appUserRepo.findUserByVerificationCode(verificationCode).map(
+     var x = appUserRepo.findUserByVerificationCode(verificationCode).map(
                 (u)->{
                     log.info("Found user: "+u.getVerificationCode());
                     u.setVerificationCode(null);
@@ -123,6 +130,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public String verifyPasswordReset(String verificationCode) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException {
+        var randomPassword = RandomString.make(8);
+        var user = appUserRepo.findUserByVerificationCode(verificationCode).map(
+                (u)->{
+                    log.info("Found user: "+u.getVerificationCode());
+                    u.setVerificationCode(null);
+                    u.setIsEnabled(true);
+                    u.setPassword(passwordEncoder.encode(randomPassword));
+                    return appUserRepo.save(u);
+                }
+        ).orElseThrow(()->new EntityNotFoundException("Verification failed"));
+
+        emailSender.sendResetPasswordCredentials(user, randomPassword);
+
+        return "Verification completed successfully";
+    }
+
+    @Override
     public ResponseEntity<AppUserDto> loggedInUserDetails(@AuthenticationPrincipal AppUser user) throws EntityNotFoundException {
 
         var usr = appUserRepo.findById(user.getId())
@@ -130,6 +155,54 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .orElseThrow(()->new EntityNotFoundException("User not found!"));
         return ResponseEntity.ok(usr);
     }
+
+    @Override
+    public String forgetPassword(String email) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException {
+        var user = appUserRepo.findUserByEmail(email).orElseThrow( ()->new EntityNotFoundException("User not found!"));
+        user.setVerificationCode("12345"); // change later to RandomString
+        user.setIsEnabled(false);
+        appUserRepo.save(user);
+        emailSender.sendResetPasswordLink(user);
+        return "An Email has been sent with details to reset your password..";
+    }
+
+    @Override
+    public String deleteUser(String username) throws EntityNotFoundException {
+        var user = Optional.of(appUserRepo.findUserByUsername(username)).orElseThrow( ()->new EntityNotFoundException("User not found!"));
+        appUserRepo.delete(user);
+        return "User successfully deleted";
+    }
+
+    @Override
+    public String resetPassword(String username) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException {
+        var randomPassword = RandomString.make(8);
+        var user = Optional.of(appUserRepo.findUserByUsername(username))
+                .map(
+                        (u)->{
+                            u.setIsEnabled(true);
+                            u.setPassword(passwordEncoder.encode(randomPassword));
+                            return appUserRepo.save(u);
+                        }
+                )
+                .orElseThrow( ()->new EntityNotFoundException("User not found!"));
+
+        emailSender.sendResetPasswordCredentials(user, randomPassword);
+
+        return "Password successfully reset. An email with has been sent to your email.";
+    }
+
+    @Override
+    public List<AppUserDto> listAllUsers() {
+        return appUserRepo.findAll().stream().map(mapper::mapToAppUserDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public AppUserDto getSingleUser(String username) throws EntityNotFoundException {
+       return Optional.of(appUserRepo.findUserByUsername(username))
+                .map((x)->mapper.mapToAppUserDto(x))
+                .orElseThrow(()->new EntityNotFoundException("User not found!"));
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
            return Optional.of(appUserRepo.findUserByUsername(username))
