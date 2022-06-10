@@ -1,9 +1,10 @@
 package com.luslusdawmpfe.PFEBackent.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,9 +17,11 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "experience")
+@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="id")
 public class Experience extends DateAudit implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,12 +34,14 @@ public class Experience extends DateAudit implements Serializable {
     @JoinColumn(name = "author_id")
     private AppUser author;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "experience")
+    @OneToMany(mappedBy = "experience", cascade = CascadeType.ALL)
+//    @JsonManagedReference
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "experience")
+    @OneToMany(mappedBy = "experience", cascade = CascadeType.ALL)
     @Builder.Default
+//    @JsonManagedReference
     private List<Attachement> attachments = new ArrayList<>();
 
     @ElementCollection

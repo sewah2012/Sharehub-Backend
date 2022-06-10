@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AttachementDto {
+    private Long id;
     private AttachementType type;
     private String attachmentUrl;
 }

@@ -1,5 +1,8 @@
 package com.luslusdawmpfe.PFEBackent.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import net.bytebuddy.utility.RandomString;
 import org.hibernate.annotations.Fetch;
@@ -17,7 +20,8 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 public class AppUser extends DateAudit implements UserDetails, Serializable {
     @Id
@@ -31,7 +35,6 @@ public class AppUser extends DateAudit implements UserDetails, Serializable {
 
     @Column(name = "email", unique = true, nullable = false)
     private String email;
-
     private String website;
     private String imageUrl;
     @Column(name = "username", unique = true, nullable = false)
@@ -55,7 +58,14 @@ public class AppUser extends DateAudit implements UserDetails, Serializable {
     @Builder.Default
     private List<Role> roles = new ArrayList<>();
 
+    @OneToMany(mappedBy="author")
+    @Builder.Default
+    List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy="author", fetch=FetchType.EAGER)
+//    @JsonManagedReference
+    @Builder.Default
+    List<Experience> experiences = new ArrayList<>();
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles

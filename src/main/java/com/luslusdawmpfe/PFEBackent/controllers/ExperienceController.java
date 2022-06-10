@@ -8,7 +8,6 @@ import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
 import com.luslusdawmpfe.PFEBackent.services.ExperienceService;
 import com.luslusdawmpfe.PFEBackent.utils.IsExperienceOwnerOrAppAdmin;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -4,8 +4,10 @@ import com.luslusdawmpfe.PFEBackent.dtos.ExperienceDto;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.entities.Experience;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
+import com.luslusdawmpfe.PFEBackent.mappers.AttachementMapper;
 import com.luslusdawmpfe.PFEBackent.mappers.ExperienceMapper;
 import com.luslusdawmpfe.PFEBackent.repos.AppUserRepo;
+import com.luslusdawmpfe.PFEBackent.repos.AttachementRepo;
 import com.luslusdawmpfe.PFEBackent.repos.ExperienceRepo;
 import com.luslusdawmpfe.PFEBackent.services.ExperienceService;
 import lombok.RequiredArgsConstructor;
@@ -28,18 +30,29 @@ public class ExperienceServiceImpl implements ExperienceService {
     private final AppUserRepo appUserRepo;
     private final ExperienceRepo experienceRepo;
     private final ExperienceMapper experienceMapper;
-//    private final AttachementMapper attachementMapper;
-//    private final AttachementRepo attachementRepo;
+    private final AttachementMapper attachementMapper;
+    private final AttachementRepo attachementRepo;
 
     @Override
     public String shareExperience(AddExperienceDto experience, @AuthenticationPrincipal AppUser user) {
-        //save the attachements
-//        experience.getAttachments().forEach((attachment)->attachementRepo.save(attachementMapper.attachementDtoToAttachement(attachment)));
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         var exp = experienceMapper.experienceDtoToExperience(experience);
+
+
+        var attachements = experience.getAttachments()
+                .stream()
+                .map((att)->{
+                    var x = attachementMapper.attachementDtoToAttachement(att);
+                     x.setExperience(exp);
+                     return x;
+                })
+                .collect(Collectors.toList());
+
         exp.setAuthor(user);
-        var c = experienceRepo.save(exp);
-        return "Experienced submitted succefully: "+c;
+        exp.setAttachments(attachements);
+        experienceRepo.save(exp);
+
+
+        return "Experienced submitted succefully: ";
     }
 
     @Override
