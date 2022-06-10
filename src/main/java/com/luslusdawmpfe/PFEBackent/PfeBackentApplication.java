@@ -43,7 +43,7 @@ private AppUserRepo appUserRepo;
 							.email("sewah2012@gmail.com")
 							.website("www.emmanuelsewah.ga")
 							.imageUrl("")
-							.isProfileComplete(true)
+							.isRegistrationCompleted(true)
 							.isEnabled(true)
 							.roles(List.of(new Role(null,"APP_ADMIN","App adminsitrator")))
 							.build()

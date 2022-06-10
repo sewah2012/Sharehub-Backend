@@ -9,9 +9,11 @@ import com.luslusdawmpfe.PFEBackent.mappers.CommentMapper;
 import com.luslusdawmpfe.PFEBackent.repos.CommentRepo;
 import com.luslusdawmpfe.PFEBackent.repos.ExperienceRepo;
 import com.luslusdawmpfe.PFEBackent.services.CommentAndLikeService;
+import com.luslusdawmpfe.PFEBackent.utils.SecurityCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -40,10 +42,8 @@ public class CommentAndLikeServiceImpl implements CommentAndLikeService {
         var comment = commentRepo.findById(commentId)
                 .orElseThrow(()->new EntityNotFoundException("Comment Doest not exist!"));
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        var authorities = authentication.getAuthorities();
-        var loggedInuser = authentication.getName();
-        if(authorities.contains(new SimpleGrantedAuthority("APP_ADMIN")) || comment.getAuthor().getUsername().equals(loggedInuser)) {
+
+        if(SecurityCheck.isAdmin() || SecurityCheck.isOwner(comment.getAuthor().getUsername())) {
             commentRepo.findById(commentId).ifPresent(commentRepo::delete);
         } else {
             throw new AccessDeniedException("You are neither the admin or owner of this resource");
@@ -57,17 +57,17 @@ public class CommentAndLikeServiceImpl implements CommentAndLikeService {
     }
 
     @Override
-    public String likeAndUnlikeExperience(Long experienceId, String userName) throws EntityNotFoundException {
+    public String likeAndUnlikeExperience(Long experienceId, @AuthenticationPrincipal AppUser user) throws EntityNotFoundException {
         var x  = experienceRepo.findById(experienceId)
                 .map(exp->{
                     var likes = exp.getLikes();
-                    var b = likes.contains(userName) ? likes.remove(userName) : likes.add(userName);
+                    var b = likes.contains(user.getUsername()) ? likes.remove(user.getUsername()) : likes.add(user.getUsername());
                     experienceRepo.save(exp);
                     return b;
                 })
                 .orElseThrow(()->new EntityNotFoundException("No such entity!!"));
 
-        if(x) return "Like removed";
-        return "Like added";
+        if(x) return "Liked";
+        return "Unliked";
     }
 }

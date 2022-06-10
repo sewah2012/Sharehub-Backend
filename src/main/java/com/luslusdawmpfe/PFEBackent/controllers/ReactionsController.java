@@ -31,4 +31,12 @@ public class ReactionsController {
     ResponseEntity<String> deleteComment ( @PathVariable("commentId") Long comment) throws EntityNotFoundException {
         return ResponseEntity.ok(service.deleteComment(comment));
     }
+
+    @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
+    @GetMapping("/likeUnlike/{experienceId}")
+    ResponseEntity<String> likeUnlike ( @PathVariable("experienceId") Long experienceId, @AuthenticationPrincipal AppUser user) throws EntityNotFoundException {
+        return ResponseEntity.ok(service.likeAndUnlikeExperience(experienceId, user));
+    }
+
+
 }

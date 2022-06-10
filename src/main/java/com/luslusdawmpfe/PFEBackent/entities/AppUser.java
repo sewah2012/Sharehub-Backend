@@ -43,11 +43,6 @@ public class AppUser extends DateAudit implements UserDetails, Serializable {
     @Column(name = "verification_code", length =64)
     private String verificationCode;
     private Boolean isEnabled;
-    private Boolean isProfileComplete;
-
-//    @Builder.Default
-//    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    private Set<Role> roles = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
@@ -63,9 +58,11 @@ public class AppUser extends DateAudit implements UserDetails, Serializable {
     List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy="author", fetch=FetchType.EAGER)
-//    @JsonManagedReference
     @Builder.Default
     List<Experience> experiences = new ArrayList<>();
+
+    @Builder.Default
+    private boolean isRegistrationCompleted = false;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles
