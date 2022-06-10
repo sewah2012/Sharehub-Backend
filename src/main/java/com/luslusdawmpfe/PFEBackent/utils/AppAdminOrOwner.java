@@ -7,6 +7,6 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 @PreAuthorize(value = "hasAnyAuthority('APP_ADMIN') " +
-        "|| (hasAnyAuthority('APP_USER') && #username.equals(authentication.principal.username))")
+        "|| (hasAnyAuthority('APP_USER') && #commentAuthor.equals(authentication.principal.username))")
 public @interface AppAdminOrOwner {
 }
