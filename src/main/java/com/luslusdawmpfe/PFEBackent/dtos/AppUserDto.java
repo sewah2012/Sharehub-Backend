@@ -24,13 +24,7 @@ public class AppUserDto implements Serializable {
     private  String website;
     private  String imageUrl;
     private  String username;
+    private boolean isRegistrationCompleted;
     private  List<Role> roles;
 
-    public AppUserDto(Long id, String firstName, String lastName, String imageUrl, String username) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.imageUrl = imageUrl;
-        this.username = username;
-    }
 }

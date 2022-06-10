@@ -10,12 +10,14 @@ import com.luslusdawmpfe.PFEBackent.repos.AppUserRepo;
 import com.luslusdawmpfe.PFEBackent.repos.AttachementRepo;
 import com.luslusdawmpfe.PFEBackent.repos.ExperienceRepo;
 import com.luslusdawmpfe.PFEBackent.services.ExperienceService;
+import com.luslusdawmpfe.PFEBackent.utils.SecurityCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,31 +69,29 @@ public class ExperienceServiceImpl implements ExperienceService {
     }
 
     @Override
-    public Experience getOneExperience(Long experienceId) throws EntityNotFoundException {
-        return experienceRepo.findById(experienceId).orElseThrow(()->new EntityNotFoundException("No such experience found..."));
+    public ExperienceDto getOneExperience(Long experienceId) throws EntityNotFoundException {
+        return experienceRepo.findById(experienceId)
+                .map(experienceMapper::mapToExperienceDto)
+                .orElseThrow(()->new EntityNotFoundException("No such experience found..."));
+
     }
 
     @Override
     public String updateExperience(Experience experience) throws EntityNotFoundException {
-        experienceRepo.findById(experience.getId()).map(
-                (x)->experienceRepo.save(experience)
-        ).orElseThrow(()->new EntityNotFoundException("Update Failed... No such exception!"));
+        var x = experienceRepo.findById(experience.getId())
+        .orElseThrow(()->new EntityNotFoundException("Update Failed... No such exception!"));
+
+        if(!SecurityCheck.isAdmin() || !SecurityCheck.isOwner(x.getAuthor().getUsername())) throw new AccessDeniedException("You are neither the admin or owner of this resource");
+        experienceRepo.save(experience);
         return "Update completed successfully";
     }
 
     @Override
-    public String deleteExperience(Experience experience) throws EntityNotFoundException {
-        var x = experienceRepo.findById(experience.getId()).orElseThrow(()->new EntityNotFoundException("Update Failed... No such exception!"));
+    public String deleteExperience(Long experienceId) throws EntityNotFoundException {
+        var x = experienceRepo.findById(experienceId).orElseThrow(()->new EntityNotFoundException("Update Failed... No such exception!"));
+        if(!SecurityCheck.isAdmin() || !SecurityCheck.isOwner(x.getAuthor().getUsername())) throw new AccessDeniedException("You are neither the admin or owner of this resource");
         experienceRepo.delete(x);
         return "Successfully deleted Experience";
     }
 
-    //Take this to a utility class
-//    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//    public Boolean isAdmin(AppUser appUser){
-//        return auth.getAuthorities().contains(new SimpleGrantedAuthority("APP_ADMIN"));
-//    }
-//    public Boolean isExperienceOwner(Experience experience){
-//        return experience.getAuthor().getUsername().equalsIgnoreCase(auth.getPrincipal().toString());
-//    }
 }

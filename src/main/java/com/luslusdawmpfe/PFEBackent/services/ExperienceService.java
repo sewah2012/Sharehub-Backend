@@ -13,8 +13,8 @@ import java.util.List;
 public interface ExperienceService {
     String shareExperience(AddExperienceDto experience, AppUser user);
     ResponseEntity<List<ExperienceDto>> listExperiences(int pageNumber, int pageSize, String softBy);
-    Experience getOneExperience(Long experienceId) throws EntityNotFoundException;
+    ExperienceDto getOneExperience(Long experienceId) throws EntityNotFoundException;
     String updateExperience(Experience experience) throws EntityNotFoundException;
-    String deleteExperience(Experience experience) throws EntityNotFoundException;
+    String deleteExperience(Long experience) throws EntityNotFoundException;
 
 }

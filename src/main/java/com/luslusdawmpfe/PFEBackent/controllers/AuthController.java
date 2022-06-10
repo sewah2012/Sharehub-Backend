@@ -1,9 +1,6 @@
 package com.luslusdawmpfe.PFEBackent.controllers;
 import com.luslusdawmpfe.PFEBackent.configs.TokenProvider;
-import com.luslusdawmpfe.PFEBackent.dtos.AppUserDto;
-import com.luslusdawmpfe.PFEBackent.dtos.CreateUserDto;
-import com.luslusdawmpfe.PFEBackent.dtos.LoginDto;
-import com.luslusdawmpfe.PFEBackent.dtos.SignupDto;
+import com.luslusdawmpfe.PFEBackent.dtos.*;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
 import com.luslusdawmpfe.PFEBackent.services.UserService;
@@ -94,10 +91,6 @@ public class AuthController {
         return ResponseEntity.ok(userService.getSingleUser(username));
     }
 
-
-
-
-
     @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
     @GetMapping("/myDetails")
     ResponseEntity<AppUserDto> loggedInUserDetails(@AuthenticationPrincipal AppUser user) throws Exception {
@@ -105,6 +98,13 @@ public class AuthController {
     }
 
     //TODO: userInfo
+
+    @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
+    @PostMapping("/completeSignup")
+    ResponseEntity<String> completeRegistration(@AuthenticationPrincipal AppUser user, @RequestBody ResgistrationCompletionDto registrationCompletionDto) throws Exception {
+        return ResponseEntity.ok(userService.completeRegistration(user, registrationCompletionDto));
+    }
+
 
     private String getSiteUrl(HttpServletRequest request){
         String siteUrl = request.getRequestURL().toString();

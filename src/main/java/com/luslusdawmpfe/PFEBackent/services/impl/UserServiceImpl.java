@@ -2,6 +2,7 @@ package com.luslusdawmpfe.PFEBackent.services.impl;
 
 import com.luslusdawmpfe.PFEBackent.dtos.AppUserDto;
 import com.luslusdawmpfe.PFEBackent.dtos.CreateUserDto;
+import com.luslusdawmpfe.PFEBackent.dtos.ResgistrationCompletionDto;
 import com.luslusdawmpfe.PFEBackent.dtos.SignupDto;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.entities.Role;
@@ -201,6 +202,23 @@ public class UserServiceImpl implements UserService, UserDetailsService {
        return Optional.of(appUserRepo.findUserByUsername(username))
                 .map((x)->mapper.mapToAppUserDto(x))
                 .orElseThrow(()->new EntityNotFoundException("User not found!"));
+    }
+
+
+    @Override
+    public String completeRegistration(AppUser user, ResgistrationCompletionDto registrationCompletionDto) {
+        user.setWebsite(registrationCompletionDto.getWebsite());
+        user.setImageUrl(registrationCompletionDto.getImageUrl());
+        user.setNickname(registrationCompletionDto.getNickname());
+        user.setDateOfBirth(registrationCompletionDto.getDateOfBirth());
+        user.setAddress(registrationCompletionDto.getAddress());
+        user.setRegistrationCompleted(true);
+
+        var completedUser = appUserRepo.save(user);
+
+        log.info("Is user registration complete: "+completedUser.isRegistrationCompleted());
+
+        return completedUser.isRegistrationCompleted() ? "User Signup successfully completed" : "Error completing signup";
     }
 
     @Override

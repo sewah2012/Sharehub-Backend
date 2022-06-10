@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+
 public class SignupDto {
     private final String firstName;
     private final String lastName;
