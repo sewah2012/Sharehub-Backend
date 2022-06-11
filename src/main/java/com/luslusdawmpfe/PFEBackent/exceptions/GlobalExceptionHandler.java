@@ -28,6 +28,13 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(Objects.nonNull(ex.getMessage()) ? ex.getMessage() : DEFAULT_INTERNAL_SERVER_ERROR_MESSAGE, HttpStatus.ALREADY_REPORTED);
     }
 
+    @ExceptionHandler(IllegalFileEextensionException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> illegalRequest(Exception ex){
+        log.error(ex.getMessage());
+        return buildErrorResponse(Objects.nonNull(ex.getMessage()) ? ex.getMessage() : DEFAULT_INTERNAL_SERVER_ERROR_MESSAGE, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler({Throwable.class, Exception.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> internalExceptionHandler(Exception ex){

@@ -23,5 +23,6 @@ public class Attachement extends DateAudit implements Serializable {
     @Enumerated(EnumType.STRING)
     private AttachementType type;
 
+    private String attachementName;
     private String attachmentUrl;
 }
