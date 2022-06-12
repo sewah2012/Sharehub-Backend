@@ -2,14 +2,19 @@ package com.luslusdawmpfe.PFEBackent.services.impl;
 import com.luslusdawmpfe.PFEBackent.dtos.AddExperienceDto;
 import com.luslusdawmpfe.PFEBackent.dtos.ExperienceDto;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
+import com.luslusdawmpfe.PFEBackent.entities.Attachement;
+import com.luslusdawmpfe.PFEBackent.entities.AttachementType;
 import com.luslusdawmpfe.PFEBackent.entities.Experience;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
+import com.luslusdawmpfe.PFEBackent.exceptions.IllegalFileEextensionException;
 import com.luslusdawmpfe.PFEBackent.mappers.AttachementMapper;
 import com.luslusdawmpfe.PFEBackent.mappers.ExperienceMapper;
 import com.luslusdawmpfe.PFEBackent.repos.AppUserRepo;
 import com.luslusdawmpfe.PFEBackent.repos.AttachementRepo;
 import com.luslusdawmpfe.PFEBackent.repos.ExperienceRepo;
 import com.luslusdawmpfe.PFEBackent.services.ExperienceService;
+import com.luslusdawmpfe.PFEBackent.services.StorageService;
+import com.luslusdawmpfe.PFEBackent.utils.FileUploadHelpers;
 import com.luslusdawmpfe.PFEBackent.utils.SecurityCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,8 +27,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,20 +43,50 @@ public class ExperienceServiceImpl implements ExperienceService {
     private final ExperienceMapper experienceMapper;
     private final AttachementMapper attachementMapper;
     private final AttachementRepo attachementRepo;
+    private final StorageService storageService;
 
     @Override
-    public String shareExperience(AddExperienceDto experience, @AuthenticationPrincipal AppUser user) {
+    public String shareExperience(MultipartFile[] files, AddExperienceDto experience, @AuthenticationPrincipal AppUser user) {
+        Set<String> imageExtentions = Set.of(".jpg",".png",".jpeg");
+        Set<String> videoExtentions = Set.of(".mp4");
         var exp = experienceMapper.experienceDtoToExperience(experience);
 
+        var attachements = Arrays.stream(files)
+                        .map(attachement->{
+                            var extension = FileUploadHelpers.getExtension(Objects.requireNonNull(attachement.getOriginalFilename()));
+                            if(imageExtentions.contains(extension)){
+                                try {
+                                   var att =  storageService.uploadImage(attachement).getResponse();
+                                   return Attachement.builder()
+                                           .experience(exp)
+                                           .attachementName((String) att.get("fileName"))
+                                           .attachmentUrl( (String) att.get("url"))
+                                           .type((AttachementType) att.get("type"))
+                                           .build();
+                                } catch (IllegalFileEextensionException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
 
-        var attachements = experience.getAttachments()
-                .stream()
-                .map((att)->{
-                    var x = attachementMapper.attachementDtoToAttachement(att);
-                     x.setExperience(exp);
-                     return x;
-                })
-                .collect(Collectors.toList());
+                            if(videoExtentions.contains(extension)){
+                                try {
+
+                                    var att =  storageService.uploadImage(attachement).getResponse();
+                                    return Attachement.builder()
+                                            .experience(exp)
+                                            .attachementName((String) att.get("fileName"))
+                                            .attachmentUrl( (String) att.get("url"))
+                                            .type((AttachementType) att.get("type"))
+                                            .build();
+                                } catch (IllegalFileEextensionException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            return null;
+
+                        }).collect(Collectors.toList());
+
 
         exp.setAuthor(user);
         exp.setAttachments(attachements);

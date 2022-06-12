@@ -6,11 +6,11 @@ import com.luslusdawmpfe.PFEBackent.services.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,13 +20,19 @@ public class StorageController {
 
     @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
     @PostMapping("/upload/image")
-    ResponseEntity<ApiResponseDto> storeImage(@RequestParam("file")MultipartFile multipartFile) throws IllegalFileEextensionException {
-        return service.uploadImage(multipartFile);
+    ResponseEntity<ApiResponseDto> storeImage(@RequestParam("file") MultipartFile multipartFile) throws IllegalFileEextensionException {
+        return ResponseEntity.ok(service.uploadImage(multipartFile));
+    }
+
+    @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
+    @PostMapping("/uploadResource")
+    ResponseEntity<ApiResponseDto> uploadResource(@RequestParam("files") MultipartFile[] files) throws IllegalFileEextensionException {
+        return ResponseEntity.ok(service.uploadFiles(files));
     }
 
     @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
     @PostMapping("/deleteResource")
     ResponseEntity<ApiResponseDto> storeImage(@RequestParam("fileName") String filename) throws Exception {
-        return service.deleteResource(filename);
+        return ResponseEntity.ok(service.deleteResource(filename));
     }
 }
