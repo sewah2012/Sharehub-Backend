@@ -7,11 +7,12 @@ import com.luslusdawmpfe.PFEBackent.entities.Experience;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface ExperienceService {
-    String shareExperience(AddExperienceDto experience, AppUser user);
+    String shareExperience(MultipartFile[] files, AddExperienceDto experience, AppUser user);
     ResponseEntity<List<ExperienceDto>> listExperiences(int pageNumber, int pageSize, String softBy);
     ExperienceDto getOneExperience(Long experienceId) throws EntityNotFoundException;
     String updateExperience(Experience experience) throws EntityNotFoundException;

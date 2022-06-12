@@ -1,5 +1,7 @@
 package com.luslusdawmpfe.PFEBackent.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luslusdawmpfe.PFEBackent.dtos.AddExperienceDto;
 import com.luslusdawmpfe.PFEBackent.dtos.ExperienceDto;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
@@ -8,10 +10,12 @@ import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
 import com.luslusdawmpfe.PFEBackent.services.ExperienceService;
 import com.luslusdawmpfe.PFEBackent.utils.IsExperienceOwnerOrAppAdmin;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,9 +26,13 @@ public class ExperienceController {
     private final ExperienceService experienceService;
 
     @PreAuthorize("hasAnyAuthority({'APP_ADMIN','APP_USER'})")
-    @PostMapping("/add")
-    public ResponseEntity<String> addNewExperience(@RequestBody AddExperienceDto experience, @AuthenticationPrincipal AppUser user){
-        return ResponseEntity.ok(experienceService.shareExperience(experience, user));
+    @PostMapping(value="/add")
+    public ResponseEntity<String> addNewExperience(@RequestParam("attachements") MultipartFile[] files, @RequestParam("experience") String experience, @AuthenticationPrincipal AppUser user) throws JsonProcessingException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        AddExperienceDto obj = mapper.readValue(experience, AddExperienceDto.class);
+
+        return ResponseEntity.ok(experienceService.shareExperience(files, obj, user));
     }
 
     @PreAuthorize("hasAnyAuthority({'APP_ADMIN','APP_USER'})")
