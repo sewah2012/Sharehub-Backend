@@ -31,10 +31,10 @@ public class StorageServiceImpl implements StorageService {
         var fileExtension = FileUploadHelpers.getExtension(Objects.requireNonNull(multipartFile.getOriginalFilename()));
         Set<String> acceptedFileExtension =Set.of(".png",".jpg",".jpeg");
         if(!acceptedFileExtension.contains(fileExtension)) throw new IllegalFileEextensionException("Invalid File Type: Please use an image of either "+acceptedFileExtension +"extension");
-
+        String filename;
         String TEMP_URL;
         try {
-            String filename = multipartFile.getOriginalFilename();
+            filename = multipartFile.getOriginalFilename();
             assert filename != null; //me giving java assurance that file name will always be available
             filename = UUID.randomUUID().toString().concat(fileExtension);
 
@@ -43,7 +43,8 @@ public class StorageServiceImpl implements StorageService {
             var x = file.delete();
 
             Map<String, Object> rsp = new HashMap<>();
-            rsp.put("fileName", filename);
+            log.info("File name uploaded: "+filename);
+            rsp.put("filename", filename);
             rsp.put("url", TEMP_URL);
             rsp.put("type", AttachementType.IMAGE);
 
@@ -63,8 +64,9 @@ public class StorageServiceImpl implements StorageService {
         if(!acceptedFileExtension.contains(fileExtension)) throw new IllegalFileEextensionException("Invalid File Type: Please use Video "+acceptedFileExtension +"extension");
 
         String VIDEO_TEMP_URL;
+        String filename;
         try {
-            var filename = multipartFile.getOriginalFilename();
+            filename = multipartFile.getOriginalFilename();
             assert filename != null; //me giving java assurance that file name will always be available
             filename = UUID.randomUUID().toString().concat(fileExtension);
 
@@ -72,6 +74,7 @@ public class StorageServiceImpl implements StorageService {
             VIDEO_TEMP_URL = FileUploadHelpers.uploadFile(file, filename);
             var x = file.delete();
 
+            log.info("File name uploaded: "+filename);
             Map<String, Object> rsp = new HashMap<>();
             rsp.put("fileName", filename);
             rsp.put("url", VIDEO_TEMP_URL);
@@ -97,8 +100,6 @@ public class StorageServiceImpl implements StorageService {
     }
     @Override
     public ApiResponseDto uploadFiles(MultipartFile[] files) {
-        List<AttachementDto> att = new ArrayList<>();
-
         Set<String> imageExtentions = Set.of(".jpg",".png",".jpeg");
         Set<String> videoExtentions = Set.of(".mp4");
 

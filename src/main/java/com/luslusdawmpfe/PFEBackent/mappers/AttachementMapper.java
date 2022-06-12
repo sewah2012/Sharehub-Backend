@@ -7,4 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper(config=MapperConfiguration.class)
 public interface AttachementMapper {
     Attachement attachementDtoToAttachement(AttachementDto a);
+    AttachementDto mapToAttachementDto(Attachement a);
 }
