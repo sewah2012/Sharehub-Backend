@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class AttachementDto {
     private Long id;
     private AttachementType type;
-    private String AttachementName;
+    private String attachmentName;
     private String attachmentUrl;
 }

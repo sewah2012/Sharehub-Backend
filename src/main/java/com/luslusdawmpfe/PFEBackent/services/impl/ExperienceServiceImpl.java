@@ -59,7 +59,7 @@ public class ExperienceServiceImpl implements ExperienceService {
                                    var att =  storageService.uploadImage(attachement).getResponse();
                                    return Attachement.builder()
                                            .experience(exp)
-                                           .attachementName((String) att.get("fileName"))
+                                           .attachmentName((String) att.get("filename"))
                                            .attachmentUrl( (String) att.get("url"))
                                            .type((AttachementType) att.get("type"))
                                            .build();
@@ -74,7 +74,7 @@ public class ExperienceServiceImpl implements ExperienceService {
                                     var att =  storageService.uploadImage(attachement).getResponse();
                                     return Attachement.builder()
                                             .experience(exp)
-                                            .attachementName((String) att.get("fileName"))
+                                            .attachmentName((String) att.get("filename"))
                                             .attachmentUrl( (String) att.get("url"))
                                             .type((AttachementType) att.get("type"))
                                             .build();
