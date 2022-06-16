@@ -1,5 +1,6 @@
 package com.luslusdawmpfe.PFEBackent.services.impl;
 
+import com.google.gson.Gson;
 import com.luslusdawmpfe.PFEBackent.dtos.ApiResponseDto;
 import com.luslusdawmpfe.PFEBackent.dtos.AttachementDto;
 import com.luslusdawmpfe.PFEBackent.entities.AttachementType;
@@ -48,6 +49,7 @@ public class StorageServiceImpl implements StorageService {
             rsp.put("url", TEMP_URL);
             rsp.put("type", AttachementType.IMAGE);
 
+            log.info("RESPONSE {}",new Gson().toJson(rsp));
             return ApiResponseDto.builder().response(rsp).build();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -76,7 +78,7 @@ public class StorageServiceImpl implements StorageService {
 
             log.info("File name uploaded: "+filename);
             Map<String, Object> rsp = new HashMap<>();
-            rsp.put("fileName", filename);
+            rsp.put("filename", filename);
             rsp.put("url", VIDEO_TEMP_URL);
             rsp.put("type", AttachementType.VIDEO);
 
