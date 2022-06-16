@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mapper(config=MapperConfiguration.class)
+@Mapper(config=MapperConfiguration.class, uses = {CommonMappers.class, AttachementMapper.class})
 public interface ExperienceMapper {
     Experience experienceDtoToExperience(AddExperienceDto ex);
 

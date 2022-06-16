@@ -1,5 +1,6 @@
 package com.luslusdawmpfe.PFEBackent.services.impl;
 import com.luslusdawmpfe.PFEBackent.dtos.AddExperienceDto;
+import com.luslusdawmpfe.PFEBackent.dtos.ApiResponseDto;
 import com.luslusdawmpfe.PFEBackent.dtos.ExperienceDto;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.entities.Attachement;
@@ -29,10 +30,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,12 +52,28 @@ public class ExperienceServiceImpl implements ExperienceService {
         var attachements = Arrays.stream(files)
                         .map(attachement->{
                             var extension = FileUploadHelpers.getExtension(Objects.requireNonNull(attachement.getOriginalFilename()));
-                            if(imageExtentions.contains(extension)){
-                                try {
+                            Optional<ApiResponseDto> result = Optional.empty();
+                            try {
+                                if(imageExtentions.contains(extension))
+                                    result = Optional.ofNullable(storageService.uploadImage(attachement));
+                                else if(videoExtentions.contains(extension))
+                                    result = Optional.ofNullable(storageService.uploadVideo(attachement));
+                            } catch (IllegalFileEextensionException e) {
+                                throw new RuntimeException(e);
+                            }
+                            return result.map(ApiResponseDto::getResponse)
+                                    .map(att -> Attachement.builder()
+                                            .experience(exp)
+                                            .attachmentName((String) att.get("filename"))
+                                            .attachmentUrl( (String) att.get("url"))
+                                            .type((AttachementType) att.get("type"))
+                                            .build())
+                                    .orElseThrow();
+/*                                try {
                                    var att =  storageService.uploadImage(attachement).getResponse();
                                    return Attachement.builder()
                                            .experience(exp)
-                                           .attachmentName((String) att.get("filename"))
+                                           .attachmentName((String) att.get("fileName"))
                                            .attachmentUrl( (String) att.get("url"))
                                            .type((AttachementType) att.get("type"))
                                            .build();
@@ -71,10 +85,10 @@ public class ExperienceServiceImpl implements ExperienceService {
                             if(videoExtentions.contains(extension)){
                                 try {
 
-                                    var att =  storageService.uploadImage(attachement).getResponse();
+                                    var att =  storageService.uploadVideo(attachement).getResponse();
                                     return Attachement.builder()
                                             .experience(exp)
-                                            .attachmentName((String) att.get("filename"))
+                                            .attachmentName((String) att.get("fileName"))
                                             .attachmentUrl( (String) att.get("url"))
                                             .type((AttachementType) att.get("type"))
                                             .build();
@@ -83,7 +97,7 @@ public class ExperienceServiceImpl implements ExperienceService {
                                 }
                             }
 
-                            return null;
+                            return null;*/
 
                         }).collect(Collectors.toList());
 
