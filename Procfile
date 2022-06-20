@@ -1,1 +1,1 @@
-web: java -Dspring.profiles.active=prod -Dserver.port=$PORT -jar target/PFE-Backent-0.0.1-SNAPSHOT.jar
+web: java -Dspring.profiles.active=prod -jar target/PFE-Backent-0.0.1-SNAPSHOT.jar** --server.port=$PORT
