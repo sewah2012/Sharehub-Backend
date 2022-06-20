@@ -41,13 +41,3 @@ jwt:
     key: roles
   header:
     string: Authorization
-
-firebase:
-  config:
-    apiKey: "AIzaSyBovpBAybWr0ZTCnHr74Z36j86xQUQoK18"
-    authDomain: "share-hub-4607b.firebaseapp.com"
-    projectId: "share-hub-4607b"
-    storageBucket: "share-hub-4607b.appspot.com"
-    messagingSenderId: "490893571259"
-    appId: "1:490893571259:web:f163ced78ce95ce4fca59e"
-    measurementId: "G-QVGJ4TC4G4"
