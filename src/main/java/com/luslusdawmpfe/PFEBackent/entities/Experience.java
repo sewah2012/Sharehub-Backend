@@ -35,7 +35,7 @@ public class Experience extends DateAudit implements Serializable {
     private AppUser author;
 
     @OneToMany(mappedBy = "experience", cascade = CascadeType.ALL)
-//    @JsonManagedReference
+    @OrderBy("creationDate DESC")
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 

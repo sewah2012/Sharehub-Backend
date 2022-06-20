@@ -25,7 +25,7 @@ public class ExperienceController {
 
     @PreAuthorize("hasAnyAuthority({'APP_ADMIN','APP_USER'})")
     @PostMapping(value="/add")
-    public ResponseEntity<String> addNewExperience(@RequestParam("attachements") MultipartFile[] files, @RequestParam("experience") String experience, @AuthenticationPrincipal AppUser user) throws JsonProcessingException {
+    public ResponseEntity<ExperienceDto> addNewExperience(@RequestParam("attachements") MultipartFile[] files, @RequestParam("experience") String experience, @AuthenticationPrincipal AppUser user) throws JsonProcessingException {
 
         ObjectMapper mapper = new ObjectMapper();
         AddExperienceDto obj = mapper.readValue(experience, AddExperienceDto.class);

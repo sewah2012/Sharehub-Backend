@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ExperienceService {
-    String shareExperience(MultipartFile[] files, AddExperienceDto experience, AppUser user);
+    ExperienceDto shareExperience(MultipartFile[] files, AddExperienceDto experience, AppUser user);
     ResponseEntity<List<ExperienceDto>> listExperiences(int pageNumber, int pageSize, String softBy);
     ExperienceDto getOneExperience(Long experienceId) throws EntityNotFoundException;
     String updateExperience(Experience experience) throws EntityNotFoundException;

@@ -21,7 +21,7 @@ public class ReactionsController {
 
     @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
     @PostMapping("/comment")
-    ResponseEntity<String> comment (@RequestBody AddCommentDto comment, @AuthenticationPrincipal AppUser user){
+    ResponseEntity<CommentDto> comment (@RequestBody AddCommentDto comment, @AuthenticationPrincipal AppUser user){
         return ResponseEntity.ok(service.addComment(comment, user));
     }
 

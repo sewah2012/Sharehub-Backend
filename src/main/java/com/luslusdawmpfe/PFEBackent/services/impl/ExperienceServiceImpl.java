@@ -44,7 +44,7 @@ public class ExperienceServiceImpl implements ExperienceService {
     private final StorageService storageService;
 
     @Override
-    public String shareExperience(MultipartFile[] files, AddExperienceDto experience, @AuthenticationPrincipal AppUser user) {
+    public ExperienceDto shareExperience(MultipartFile[] files, AddExperienceDto experience, @AuthenticationPrincipal AppUser user) {
         Set<String> imageExtentions = Set.of(".jpg",".png",".jpeg");
         Set<String> videoExtentions = Set.of(".mp4");
         var exp = experienceMapper.experienceDtoToExperience(experience);
@@ -104,10 +104,10 @@ public class ExperienceServiceImpl implements ExperienceService {
 
         exp.setAuthor(user);
         exp.setAttachments(attachements);
-        experienceRepo.save(exp);
+       var savedExperience =  experienceRepo.save(exp);
 
 
-        return "Experienced submitted succefully: ";
+        return experienceMapper.mapToExperienceDto(savedExperience);
     }
 
     @Override
@@ -143,6 +143,18 @@ public class ExperienceServiceImpl implements ExperienceService {
     public String deleteExperience(Long experienceId) throws EntityNotFoundException {
         var x = experienceRepo.findById(experienceId).orElseThrow(()->new EntityNotFoundException("Update Failed... No such exception!"));
         if(!SecurityCheck.isAdmin() || !SecurityCheck.isOwner(x.getAuthor().getUsername())) throw new AccessDeniedException("You are neither the admin or owner of this resource");
+        var attachmentNames = x.getAttachments().stream()
+                        .map(Attachement::getAttachmentName).collect(Collectors.toList());
+
+        attachmentNames.forEach(an -> {
+            try {
+                storageService.deleteResource(an);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+
         experienceRepo.delete(x);
         return "Successfully deleted Experience";
     }

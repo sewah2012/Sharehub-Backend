@@ -21,14 +21,14 @@ public class EmailSender {
     private final JavaMailSender mailSender;
     private final String fromAddress = "support@sharehub.test";
     private final String senderName = "Share Hub";
-    private final String website = "http://www.sharehub.test";
+    private final String website = "http://localhost:3000/";
 
 
 
   public void sendVerificationEmail(AppUser user, String siteUrl) throws MessagingException, UnsupportedEncodingException {
       final String emailTemplate = "Dear [[name]],<br>"
               + "Please find below your Sharehub email verification code:<br>"
-              + "<h2>Reset Password Code</h2> : <h3>[[code]]</h3>"
+              + "<h2>Email Verification Code</h2> : <h3>[[code]]</h3>"
               + "Thank you,<br>"
               + "Emmanuel from <span>ShareHub</span>";
 
@@ -52,7 +52,7 @@ public class EmailSender {
     mailSender.send(message);
 
 
-    log.info("Email send successfully: "+content);
+    log.info("Email sent successfully: "+content);
 
 
     //clear reset content
