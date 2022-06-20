@@ -112,18 +112,32 @@
 <!--				<groupId>org.springframework.boot</groupId>-->
 <!--				<artifactId>spring-boot-maven-plugin</artifactId>-->
 <!--			</plugin>-->
+
+			<plugin>
+
+				<!-- Building an executable jar -->
+
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+
+							<!-- give full qualified name of your main class-->
+							<mainClass>com/luslusdawmpfe/PFEBackent/PfeBackentApplication.java</mainClass>
+
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
-<!--					<compilerVersion>1.8</compilerVersion>-->
 					<source>11</source>
 					<target>11</target>
-<!--					<annotationProcessors>-->
-<!--						<annotationProcessor>org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor</annotationProcessor>-->
-<!--						<annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>-->
-<!--					</annotationProcessors>-->
 
 					<annotationProcessorPaths>
 						<path>
