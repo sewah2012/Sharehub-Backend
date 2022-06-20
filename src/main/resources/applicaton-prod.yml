@@ -1,0 +1,44 @@
+server:
+  port: 9999
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: ShareHub-app
+  mail:
+    host:  smtp.mailtrap.io
+    port: 2525
+    username: 80005ffb44019b
+    password: 515c1e70b3cf35
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: ${DATABASE_URL}
+    username: root
+    password: root
+    driverClassName: org.postgresql.Driver
+  sql:
+    init:
+      platform: postgres
+
+jwt:
+  token:
+    validity: 18000
+    prefix: Bearer
+  signing:
+    key: signingkey
+  authorities:
+    key: roles
+  header:
+    string: Authorization
+
