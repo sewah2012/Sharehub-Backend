@@ -12,14 +12,10 @@ import com.luslusdawmpfe.PFEBackent.services.CommentAndLikeService;
 import com.luslusdawmpfe.PFEBackent.utils.SecurityCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,12 +25,13 @@ public class CommentAndLikeServiceImpl implements CommentAndLikeService {
     private final CommentMapper commentMapper;
 
     @Override
-    public String addComment(AddCommentDto comment, AppUser user) {
+    public CommentDto addComment(AddCommentDto comment, AppUser user) {
         comment.setAuthor(user);
         var x = commentMapper.AddCommentDtoToComment(comment);//        x.setAuthor(user);
-         commentRepo.save(x);
+         var savedComment = commentRepo.save(x);
 
-         return "Comment successfully added";
+
+         return commentMapper.mapToCommentDto(savedComment);
     }
 
     @Override

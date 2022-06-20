@@ -10,7 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.util.List;
 
 public interface CommentAndLikeService {
-    String addComment(AddCommentDto comment, AppUser user);
+    CommentDto addComment(AddCommentDto comment, AppUser user);
     String deleteComment(Long CommentId) throws EntityNotFoundException;
     List<Comment> getComments(Long experienceId);
 
