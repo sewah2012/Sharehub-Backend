@@ -42,3 +42,15 @@ jwt:
   header:
     string: Authorization
 
+firebase:
+  bucketName: ${FIREBASE_BUCKET_NAME}
+  type: ${FIREBASE_TYPE}
+  projectId: ${FIREBASE_PROJECT_ID}
+  privateKeyId: ${FIREBASE_PRIVATE_KEY_ID}
+  privateKey: ${FIREBASE_PRIVATE_KEY}
+  clientEmail: ${FIREBASE_CLIENT_EMAIL}
+  clientId: ${FIREBASE_CLIENT_ID}
+  authUri: ${FIREBASE_AUTH_URI}
+  tokenUri: ${FIREBASE_TOKEN_URI}
+  authProvider_x509_cert_url: ${FIREBASE_AUTH_PROVIDER_X509_CERT_URL}
+  client_x509_cert_url: ${FIREBASE_CLIENT_X509_CERT_URL}

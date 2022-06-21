@@ -1,14 +1,19 @@
 package com.luslusdawmpfe.PFEBackent.utils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.StorageClient;
+import com.luslusdawmpfe.PFEBackent.configs.FirebaseCredentials;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -16,20 +21,26 @@ import java.nio.file.Files;
 
 
 @Slf4j
-@Component
+@Service
 public class FileUploadHelpers {
-    static final private String type = "service_account";
-    static final private String storageBucket = "share-hub-4607b.appspot.com";
+    @Autowired
+    private FbConfigurations fbConfigurations;
 
-    static String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/"+storageBucket+"/o/%s?alt=media";
+     private final String type = "service_account";
+private String storageBucket;
+
+     String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/"+storageBucket+"/o/%s?alt=media";
 
 
-    static {
-        InputStream serviceAccount = null;
+    @PostConstruct
+     private void initializeFbApp(){
+        storageBucket = fbConfigurations.getBucketName();
+        InputStream serviceAccount;
         try {
-            serviceAccount = new ClassPathResource(
-                    "fbSecurityConfig.json").getInputStream();
-        } catch (IOException e) {
+            log.info("Value from config prop: {}",fbConfigurations.getPrivateKey());
+
+            serviceAccount = createFirebaseCredential();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         FirebaseOptions options = null;
@@ -43,16 +54,18 @@ public class FileUploadHelpers {
         }
         FirebaseApp.initializeApp(options);
     }
-    public static String uploadFile(File file, String fileName) throws IOException {
+    public String uploadFile(File file, String fileName) throws Exception {
+
+        var test = createFirebaseCredential();
+
 
         log.info("Uploading file....");
+
         BlobId blobId = BlobId.of(storageBucket, fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
-        InputStream resource = new ClassPathResource(
-                "fbSecurityConfig.json").getInputStream();
-//        InputStream targetStream = new ByteArrayInputStream(jsonString.getBytes());
+        InputStream targetStream = createFirebaseCredential();
 
-        Credentials credentials = GoogleCredentials.fromStream(resource);
+        Credentials credentials = GoogleCredentials.fromStream(targetStream);
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
 
@@ -61,32 +74,16 @@ public class FileUploadHelpers {
         return String.format(DOWNLOAD_URL, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
     }
 
-    public static Boolean deleteFile(String fileName) throws IOException {
+    public Boolean deleteFile(String fileName) throws IOException {
+        initializeFbApp();
         log.info("Deleting file....");
         Bucket bucket = StorageClient.getInstance().bucket(storageBucket);
         log.info("File deleted successfully");
         return bucket.get(fileName).delete();
-
-
-
-//        BlobId blobId = BlobId.of(storageBucket, fileName);
-//        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
-//        InputStream resource = new ClassPathResource(
-//                "fbSecurityConfig.json").getInputStream();
-//        InputStream targetStream = new ByteArrayInputStream(jsonString.getBytes());
-
-//        Credentials credentials = GoogleCredentials.fromStream(resource);
-//        Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
-//        storage.create(blobInfo, Files.readAllBytes(file.toPath()));
-
-
-
-//        log.info("File uploaded successfully: imageUrl: "+ DOWNLOAD_URL);
-//        return String.format(DOWNLOAD_URL, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
     }
 
 
-    public static File convertToFile(MultipartFile multipartFile, String fileName) throws IOException {
+    public File convertToFile(MultipartFile multipartFile, String fileName) throws IOException {
         File tempFile = new File(fileName);
         try (FileOutputStream fos = new FileOutputStream(tempFile)) {
             fos.write(multipartFile.getBytes());
@@ -95,7 +92,30 @@ public class FileUploadHelpers {
         return tempFile;
     }
 
-    public static String getExtension(String fileName) {
+    public String getExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf("."));
     }
+
+//    @PostConstruct
+    private InputStream createFirebaseCredential() throws Exception {
+        FirebaseCredentials firebaseCredential = new FirebaseCredentials();
+        //private key
+        String privateKey = fbConfigurations.getPrivateKey().replace("\\n", "\n");
+//        log.info("private key : {}",privateKey);
+        firebaseCredential.setType(fbConfigurations.getType());
+        firebaseCredential.setProject_id(fbConfigurations.getProjectId());
+        firebaseCredential.setPrivate_key_id(fbConfigurations.getPrivateKeyId());
+        firebaseCredential.setPrivate_key(privateKey);
+        firebaseCredential.setClient_email(fbConfigurations.getClientEmail());
+        firebaseCredential.setClient_id(fbConfigurations.getClientId());
+        firebaseCredential.setAuth_uri(fbConfigurations.getAuthUri());
+        firebaseCredential.setToken_uri(fbConfigurations.getTokenUri());
+        firebaseCredential.setAuth_provider_x509_cert_url(fbConfigurations.getAuthProvider_x509_cert_url());
+        firebaseCredential.setClient_x509_cert_url(fbConfigurations.getClient_x509_cert_url());
+
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = mapper.writeValueAsString(firebaseCredential);
+       return new ByteArrayInputStream(jsonString.getBytes());
+    }
+
 }
