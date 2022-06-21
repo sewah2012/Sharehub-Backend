@@ -26,8 +26,7 @@ public class FileUploadHelpers {
     @Autowired
     private FbConfigurations fbConfigurations;
 
-     private final String type = "service_account";
-private String storageBucket;
+    private String storageBucket;
 
      String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/"+storageBucket+"/o/%s?alt=media";
 
@@ -102,7 +101,7 @@ private String storageBucket;
         //private key
         String privateKey = fbConfigurations.getPrivateKey().replace("\\n", "\n");
 //        log.info("private key : {}",privateKey);
-        firebaseCredential.setType(fbConfigurations.getType());
+
         firebaseCredential.setProject_id(fbConfigurations.getProjectId());
         firebaseCredential.setPrivate_key_id(fbConfigurations.getPrivateKeyId());
         firebaseCredential.setPrivate_key(privateKey);
@@ -112,6 +111,7 @@ private String storageBucket;
         firebaseCredential.setToken_uri(fbConfigurations.getTokenUri());
         firebaseCredential.setAuth_provider_x509_cert_url(fbConfigurations.getAuthProvider_x509_cert_url());
         firebaseCredential.setClient_x509_cert_url(fbConfigurations.getClient_x509_cert_url());
+        firebaseCredential.setType(fbConfigurations.getType());
 
         ObjectMapper mapper = new ObjectMapper();
         String jsonString = mapper.writeValueAsString(firebaseCredential);
