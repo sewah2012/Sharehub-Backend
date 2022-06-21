@@ -3,7 +3,7 @@ package com.luslusdawmpfe.PFEBackent;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.entities.Role;
 import com.luslusdawmpfe.PFEBackent.repos.AppUserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,18 +11,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @SpringBootApplication
 @PropertySource("classpath:application-${spring.profiles.active:default}.yml")
+@RequiredArgsConstructor
 public class PfeBackentApplication {
-@Autowired
-private AppUserRepo appUserRepo;
+private final AppUserRepo appUserRepo;
 	public static void main(String[] args) {
 		SpringApplication.run(PfeBackentApplication.class, args);
 	}
@@ -55,5 +52,8 @@ private AppUserRepo appUserRepo;
 		};
 	}
 
-
+	@Bean
+	String stringBean(){
+		return new String();
+	}
 }

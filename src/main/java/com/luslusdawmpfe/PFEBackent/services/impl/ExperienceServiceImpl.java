@@ -18,6 +18,7 @@ import com.luslusdawmpfe.PFEBackent.services.StorageService;
 import com.luslusdawmpfe.PFEBackent.utils.FileUploadHelpers;
 import com.luslusdawmpfe.PFEBackent.utils.SecurityCheck;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,8 @@ public class ExperienceServiceImpl implements ExperienceService {
     private final AttachementMapper attachementMapper;
     private final AttachementRepo attachementRepo;
     private final StorageService storageService;
+    @Autowired
+    private FileUploadHelpers fileUploadHelpers;
 
     @Override
     public ExperienceDto shareExperience(MultipartFile[] files, AddExperienceDto experience, @AuthenticationPrincipal AppUser user) {
@@ -51,14 +54,14 @@ public class ExperienceServiceImpl implements ExperienceService {
 
         var attachements = Arrays.stream(files)
                         .map(attachement->{
-                            var extension = FileUploadHelpers.getExtension(Objects.requireNonNull(attachement.getOriginalFilename()));
+                            var extension = fileUploadHelpers.getExtension(Objects.requireNonNull(attachement.getOriginalFilename()));
                             Optional<ApiResponseDto> result = Optional.empty();
                             try {
                                 if(imageExtentions.contains(extension))
                                     result = Optional.ofNullable(storageService.uploadImage(attachement));
                                 else if(videoExtentions.contains(extension))
                                     result = Optional.ofNullable(storageService.uploadVideo(attachement));
-                            } catch (IllegalFileEextensionException e) {
+                            } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
                             return result.map(ApiResponseDto::getResponse)

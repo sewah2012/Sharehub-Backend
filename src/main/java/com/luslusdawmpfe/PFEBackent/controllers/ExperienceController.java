@@ -9,6 +9,7 @@ import com.luslusdawmpfe.PFEBackent.entities.Experience;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
 import com.luslusdawmpfe.PFEBackent.services.ExperienceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,7 +22,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/experience")
 public class ExperienceController {
-    private final ExperienceService experienceService;
+    @Autowired
+    private ExperienceService experienceService;
 
     @PreAuthorize("hasAnyAuthority({'APP_ADMIN','APP_USER'})")
     @PostMapping(value="/add")

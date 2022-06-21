@@ -20,7 +20,7 @@ public class StorageController {
 
     @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
     @PostMapping("/upload/image")
-    ResponseEntity<ApiResponseDto> storeImage(@RequestParam("file") MultipartFile multipartFile) throws IllegalFileEextensionException {
+    ResponseEntity<ApiResponseDto> storeImage(@RequestParam("file") MultipartFile multipartFile) throws Exception {
         return ResponseEntity.ok(service.uploadImage(multipartFile));
     }
 

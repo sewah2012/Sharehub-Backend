@@ -10,11 +10,11 @@ import java.util.List;
 
 public interface StorageService {
 
-    ApiResponseDto uploadImage(MultipartFile multipartFile) throws IllegalFileEextensionException;
+    ApiResponseDto uploadImage(MultipartFile multipartFile) throws Exception;
 
     ApiResponseDto deleteResource(String filename) throws Exception;
 
     ApiResponseDto uploadFiles(MultipartFile[] files);
-    ApiResponseDto uploadVideo(MultipartFile multipartFile) throws IllegalFileEextensionException;
+    ApiResponseDto uploadVideo(MultipartFile multipartFile) throws Exception;
 
 }

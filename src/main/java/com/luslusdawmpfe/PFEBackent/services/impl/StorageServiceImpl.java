@@ -7,8 +7,10 @@ import com.luslusdawmpfe.PFEBackent.entities.AttachementType;
 import com.luslusdawmpfe.PFEBackent.exceptions.IllegalFileEextensionException;
 import com.luslusdawmpfe.PFEBackent.services.StorageService;
 import com.luslusdawmpfe.PFEBackent.utils.FileUploadHelpers;
+//import com.luslusdawmpfe.PFEBackent.utils.fileUploadHelpers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -23,13 +25,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class StorageServiceImpl implements StorageService {
-
+    @Autowired
+    private FileUploadHelpers fileUploadHelpers;
     @Override
-    public ApiResponseDto uploadImage(MultipartFile multipartFile) throws IllegalFileEextensionException {
+    public ApiResponseDto uploadImage(MultipartFile multipartFile) throws Exception {
 
         //TODO: check if image size is not more than 2mb
 
-        var fileExtension = FileUploadHelpers.getExtension(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        var fileExtension = fileUploadHelpers.getExtension(Objects.requireNonNull(multipartFile.getOriginalFilename()));
         Set<String> acceptedFileExtension =Set.of(".png",".jpg",".jpeg");
         if(!acceptedFileExtension.contains(fileExtension)) throw new IllegalFileEextensionException("Invalid File Type: Please use an image of either "+acceptedFileExtension +"extension");
         String filename;
@@ -39,8 +42,8 @@ public class StorageServiceImpl implements StorageService {
             assert filename != null; //me giving java assurance that file name will always be available
             filename = UUID.randomUUID().toString().concat(fileExtension);
 
-            File file = FileUploadHelpers.convertToFile(multipartFile,filename);
-            TEMP_URL = FileUploadHelpers.uploadFile(file, filename);
+            File file = fileUploadHelpers.convertToFile(multipartFile,filename);
+            TEMP_URL = fileUploadHelpers.uploadFile(file, filename);
             var x = file.delete();
 
             Map<String, Object> rsp = new HashMap<>();
@@ -57,11 +60,11 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public ApiResponseDto uploadVideo(MultipartFile multipartFile) throws IllegalFileEextensionException {
+    public ApiResponseDto uploadVideo(MultipartFile multipartFile) throws Exception {
 
         //TODO: check video is not more than 1 min
 
-        var fileExtension = FileUploadHelpers.getExtension(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        var fileExtension = fileUploadHelpers.getExtension(Objects.requireNonNull(multipartFile.getOriginalFilename()));
         Set<String> acceptedFileExtension =Set.of(".mp4");
         if(!acceptedFileExtension.contains(fileExtension)) throw new IllegalFileEextensionException("Invalid File Type: Please use Video "+acceptedFileExtension +"extension");
 
@@ -72,8 +75,8 @@ public class StorageServiceImpl implements StorageService {
             assert filename != null; //me giving java assurance that file name will always be available
             filename = UUID.randomUUID().toString().concat(fileExtension);
 
-            File file = FileUploadHelpers.convertToFile(multipartFile,filename);
-            VIDEO_TEMP_URL = FileUploadHelpers.uploadFile(file, filename);
+            File file = fileUploadHelpers.convertToFile(multipartFile,filename);
+            VIDEO_TEMP_URL = fileUploadHelpers.uploadFile(file, filename);
             var x = file.delete();
 
             log.info("File name uploaded: "+filename);
@@ -91,7 +94,7 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public ApiResponseDto deleteResource(String filename) throws Exception {
         log.info("Starting to delete a resource with file name of "+filename);
-       var isDeleted= FileUploadHelpers.deleteFile(filename);
+       var isDeleted= fileUploadHelpers.deleteFile(filename);
 
         Map<String, Object> rsp = new HashMap<>();
 
@@ -109,12 +112,12 @@ public class StorageServiceImpl implements StorageService {
 
        var data =  Arrays.stream(files)
                         .map(file->{
-                        var extension = FileUploadHelpers.getExtension(Objects.requireNonNull(file.getOriginalFilename()));
+                        var extension = fileUploadHelpers.getExtension(Objects.requireNonNull(file.getOriginalFilename()));
                         if(imageExtentions.contains(extension)){
                             try {
                                 return this.uploadImage(file).getResponse();
 
-                            } catch (IllegalFileEextensionException e) {
+                            } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
                         }
@@ -123,7 +126,7 @@ public class StorageServiceImpl implements StorageService {
                             try {
                                 return this.uploadImage(file).getResponse();
 
-                            } catch (IllegalFileEextensionException e) {
+                            } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
                         }
