@@ -67,9 +67,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                                 .firstName(createUserDto.getFirstName())
                                 .lastName(createUserDto.getLastName())
                                 .email(createUserDto.getEmail())
-
-//                                .verificationCode(RandomString.make(64)) // revert to this for production
-                                .verificationCode("12345") //for testing purposes
+                                .verificationCode(RandomString.make(5)) // revert to this for production
+//                                .verificationCode("12345") //for testing purposes
                                 .isEnabled(true)
                                 .roles(List.of(role))
                                 .build()
