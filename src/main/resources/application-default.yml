@@ -11,11 +11,11 @@ spring:
     port: ${SMTP_PORT}
     username: ${SMTP_USERNAME}
     password: ${SMTP_PASSWORD}
-    protocol: smtps
+    protocol: smtp
     properties:
       mail:
         transport:
-          protocol: smtps
+          protocol: smtp
         smtp:
           auth: true
           starttls:
