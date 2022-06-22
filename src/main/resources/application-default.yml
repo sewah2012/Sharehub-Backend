@@ -7,12 +7,15 @@ spring:
   application:
     name: ShareHub-app
   mail:
-    host:  smtp.mailtrap.io
-    port: 2525
-    username: 80005ffb44019b
-    password: 515c1e70b3cf35
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    protocol: smtps
     properties:
       mail:
+        transport:
+          protocol: smtps
         smtp:
           auth: true
           starttls:

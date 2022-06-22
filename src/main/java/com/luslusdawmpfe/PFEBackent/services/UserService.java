@@ -14,7 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public interface UserService {
-    String addNewUser(SignupDto user, String siteUrl) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException, EntityAlreadyExistException;
+    String signup(SignupDto user, String siteUrl) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException, EntityAlreadyExistException;
     String verifyEmail(String verificationCode) throws EntityNotFoundException;
     ResponseEntity<AppUserDto> loggedInUserDetails(@AuthenticationPrincipal AppUser user) throws EntityNotFoundException;
 
