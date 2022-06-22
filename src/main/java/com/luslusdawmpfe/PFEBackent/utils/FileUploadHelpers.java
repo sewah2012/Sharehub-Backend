@@ -28,7 +28,7 @@ public class FileUploadHelpers {
 
     private String storageBucket;
 
-     String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/"+storageBucket+"/o/%s?alt=media";
+
 
 
     @PostConstruct
@@ -54,10 +54,6 @@ public class FileUploadHelpers {
         FirebaseApp.initializeApp(options);
     }
     public String uploadFile(File file, String fileName) throws Exception {
-
-        var test = createFirebaseCredential();
-
-
         log.info("Uploading file....");
 
         BlobId blobId = BlobId.of(storageBucket, fileName);
@@ -68,6 +64,7 @@ public class FileUploadHelpers {
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
 
+        String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/"+storageBucket+"/o/%s?alt=media";
 
         log.info("File uploaded successfully: imageUrl: "+ DOWNLOAD_URL);
         return String.format(DOWNLOAD_URL, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
