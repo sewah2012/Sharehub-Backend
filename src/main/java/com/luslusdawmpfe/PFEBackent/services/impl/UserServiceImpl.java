@@ -32,6 +32,7 @@ import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional
-    public String addNewUser(SignupDto createUserDto, String siteUrl) throws MessagingException, UnsupportedEncodingException, EntityAlreadyExistException {
+    public String signup(SignupDto createUserDto, String siteUrl) throws MessagingException, UnsupportedEncodingException, EntityAlreadyExistException {
         log.info("saving user to db");
         log.info("User email: "+ createUserDto.getEmail());
         if(appUserRepo.findUserByEmail(createUserDto.getEmail()).isPresent()) throw new EntityAlreadyExistException("USer already exist in system");
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                                 .firstName(createUserDto.getFirstName())
                                 .lastName(createUserDto.getLastName())
                                 .email(createUserDto.getEmail())
-                                .verificationCode(RandomString.make(5)) // revert to this for production
+                                .verificationCode(generateCode()) // revert to this for production
 //                                .verificationCode("12345") //for testing purposes
                                 .isEnabled(true)
                                 .roles(List.of(role))
@@ -97,7 +98,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         AppUser user = appUserRepo.save(
                 AppUser.builder()
                         .username(createUserDto.getUsername())
-                        .password(passwordEncoder.encode(DEFAULT_APP_USER_ROLE_PASSWORD)) // just for testing ... will change to random string
+                        .password(passwordEncoder.encode(randomPassword)) // just for testing ... will change to random string
                         .firstName(createUserDto.getFirstName())
                         .lastName(createUserDto.getLastName())
                         .nickname(createUserDto.getNickname())
@@ -111,7 +112,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                         .build()
         );
 
-        emailSender.sendUserCredentials(user, DEFAULT_APP_USER_ROLE_PASSWORD);
+        emailSender.sendUserCredentials(user, randomPassword);
         return "Admin Create user successfully. login details are send to user email.";
     }
 
@@ -159,7 +160,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public String forgetPassword(String email) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException {
         var user = appUserRepo.findUserByEmail(email).orElseThrow( ()->new EntityNotFoundException("User not found!"));
-        user.setVerificationCode("12345"); // change later to RandomString
+        user.setVerificationCode(generateCode()); // change later to RandomString
         user.setIsEnabled(false);
         appUserRepo.save(user);
         emailSender.sendResetPasswordLink(user);
@@ -225,6 +226,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
            return Optional.of(appUserRepo.findUserByUsername(username))
                     .orElseThrow(()->new UsernameNotFoundException("User not found!"));
 
+    }
+
+    private  String generateCode() {
+        Random r = new Random( System.currentTimeMillis() );
+        var x = ((1 + r.nextInt(2)) * 10000 + r.nextInt(10000));
+
+        return String.valueOf(x);
     }
 
 

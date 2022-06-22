@@ -32,7 +32,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     ResponseEntity<String> signup(@RequestBody SignupDto user, HttpServletRequest req) throws Exception {
-        return ResponseEntity.ok(userService.addNewUser(user,getSiteUrl(req)));
+        return ResponseEntity.ok(userService.signup(user,getSiteUrl(req)));
     }
 
     @GetMapping("/verify")
