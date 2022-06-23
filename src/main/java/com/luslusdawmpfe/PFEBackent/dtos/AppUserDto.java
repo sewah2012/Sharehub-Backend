@@ -1,5 +1,6 @@
 package com.luslusdawmpfe.PFEBackent.dtos;
 
+import com.luslusdawmpfe.PFEBackent.entities.Attachement;
 import com.luslusdawmpfe.PFEBackent.entities.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class AppUserDto implements Serializable {
     private  String address;
     private  String email;
     private  String website;
-    private  String imageUrl;
+    private Attachement imageUrl;
     private  String username;
     private boolean isRegistrationCompleted;
     private  List<Role> roles;

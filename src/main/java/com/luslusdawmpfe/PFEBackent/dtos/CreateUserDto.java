@@ -1,5 +1,6 @@
 package com.luslusdawmpfe.PFEBackent.dtos;
 
+import com.luslusdawmpfe.PFEBackent.entities.Attachement;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ public class CreateUserDto {
     private final String address;
     private final String email;
     private final String website;
-    private final String imageUrl;
+    private final Attachement imageUrl;
     private final String username;
     private final String password;
     private final List<RoleDto> roles;

@@ -17,7 +17,7 @@ public class Attachement extends DateAudit implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name = "experience_id", nullable = false)
+    @JoinColumn(name = "experience_id")
     private Experience experience;
 
     @Enumerated(EnumType.STRING)

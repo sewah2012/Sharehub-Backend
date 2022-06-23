@@ -1,6 +1,8 @@
 package com.luslusdawmpfe.PFEBackent;
 
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
+import com.luslusdawmpfe.PFEBackent.entities.Attachement;
+import com.luslusdawmpfe.PFEBackent.entities.AttachementType;
 import com.luslusdawmpfe.PFEBackent.entities.Role;
 import com.luslusdawmpfe.PFEBackent.repos.AppUserRepo;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +45,6 @@ private final AppUserRepo appUserRepo;
 							.address("Sidi Maarouf, Casablanca")
 							.email("sewah2012@gmail.com")
 							.website("www.emmanuelsewah.ga")
-							.imageUrl("")
 							.isRegistrationCompleted(true)
 							.isEnabled(true)
 							.roles(List.of(new Role(null,"APP_ADMIN","App adminsitrator")))

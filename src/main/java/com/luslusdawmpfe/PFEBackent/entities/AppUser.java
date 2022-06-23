@@ -36,7 +36,8 @@ public class AppUser extends DateAudit implements UserDetails, Serializable {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
     private String website;
-    private String imageUrl;
+    @OneToOne(cascade=CascadeType.ALL)
+    private Attachement imageUrl;
     @Column(name = "username", unique = true, nullable = false)
     private String username;
     private String password;
