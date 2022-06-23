@@ -6,6 +6,10 @@ server:
 spring:
   application:
     name: ShareHub-app
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
   mail:
     host: ${SMTP_HOST}
     port: ${SMTP_PORT}
