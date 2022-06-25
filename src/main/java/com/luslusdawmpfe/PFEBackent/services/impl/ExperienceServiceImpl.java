@@ -72,36 +72,6 @@ public class ExperienceServiceImpl implements ExperienceService {
                                             .type((AttachementType) att.get("type"))
                                             .build())
                                     .orElseThrow();
-/*                                try {
-                                   var att =  storageService.uploadImage(attachement).getResponse();
-                                   return Attachement.builder()
-                                           .experience(exp)
-                                           .attachmentName((String) att.get("fileName"))
-                                           .attachmentUrl( (String) att.get("url"))
-                                           .type((AttachementType) att.get("type"))
-                                           .build();
-                                } catch (IllegalFileEextensionException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-
-                            if(videoExtentions.contains(extension)){
-                                try {
-
-                                    var att =  storageService.uploadVideo(attachement).getResponse();
-                                    return Attachement.builder()
-                                            .experience(exp)
-                                            .attachmentName((String) att.get("fileName"))
-                                            .attachmentUrl( (String) att.get("url"))
-                                            .type((AttachementType) att.get("type"))
-                                            .build();
-                                } catch (IllegalFileEextensionException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-
-                            return null;*/
-
                         }).collect(Collectors.toList());
 
 
@@ -162,4 +132,23 @@ public class ExperienceServiceImpl implements ExperienceService {
         return "Successfully deleted Experience";
     }
 
+    @Override
+    public ResponseEntity<List<ExperienceDto>> listPopularExperiences() {
+        var experienceList = experienceRepo.findPopular();
+       var popularExp= experienceList.stream().map(
+                experienceMapper::mapToExperienceDto).collect(Collectors.toList());
+        return ResponseEntity.ok(popularExp);
+
+//        Pageable paging = PageRequest.of(
+//                pageNumber, pageSize, Sort.by(sortBy).descending());
+//
+//        var experienceList = experienceRepo.findAll(paging).getContent().stream().map(
+//                experienceMapper::mapToExperienceDto).collect(Collectors.toList());
+//        return ResponseEntity.ok(experienceList);
+    }
+
+    @Override
+    public ResponseEntity<List<ExperienceDto>> listLatestExperiences() {
+        return null;
+    }
 }

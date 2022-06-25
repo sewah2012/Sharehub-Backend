@@ -18,4 +18,7 @@ public interface ExperienceService {
     String updateExperience(Experience experience) throws EntityNotFoundException;
     String deleteExperience(Long experience) throws EntityNotFoundException;
 
+    ResponseEntity<List<ExperienceDto>> listPopularExperiences();
+    ResponseEntity<List<ExperienceDto>> listLatestExperiences();
+
 }
