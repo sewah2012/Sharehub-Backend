@@ -27,9 +27,9 @@ public abstract class DateAudit {
 
     @CreatedDate
     @Column(name = "created_on", columnDefinition = "TIMESTAMP WITH TIME ZONE")
-    private LocalDateTime creationDate;
+    private OffsetDateTime creationDate;
 
     @LastModifiedDate
     @Column(name = "updated_on", columnDefinition = "TIMESTAMP WITH TIME ZONE")
-    private LocalDateTime updatedDate;
+    private OffsetDateTime updatedDate;
 }

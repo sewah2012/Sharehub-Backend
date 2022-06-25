@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import javax.persistence.Column;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +18,7 @@ public class CommentDto {
     private Long id;
     private CommentAuthorDto author;
     private String description;
-    private LocalDateTime creationDate;
-    private LocalDateTime updatedDate;
+    private OffsetDateTime creationDate;
+    private OffsetDateTime updatedDate;
 //    private Long experienceId;
 }

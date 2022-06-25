@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +22,6 @@ public class ExperienceDto {
     private List<AttachementDto> attachments;
     private Set<String> likes;
     private Boolean isActive = false;
-    private LocalDateTime creationDate;
-    private LocalDateTime updatedDate;
+    private OffsetDateTime creationDate;
+    private OffsetDateTime updatedDate;
 }

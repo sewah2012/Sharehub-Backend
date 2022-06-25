@@ -47,6 +47,15 @@ public class ExperienceController {
     }
 
     @PreAuthorize("hasAnyAuthority({'APP_ADMIN','APP_USER'})")
+    @GetMapping("/list/popular")
+    public ResponseEntity<List<ExperienceDto>>listPopularExperiences(
+
+    ){
+        return experienceService.listPopularExperiences();
+    }
+
+
+    @PreAuthorize("hasAnyAuthority({'APP_ADMIN','APP_USER'})")
     @GetMapping("/getOne/{experienceId}")
     ResponseEntity<ExperienceDto> getOne(@PathVariable("experienceId") Long experienceId) throws EntityNotFoundException {
         return ResponseEntity.ok(experienceService.getOneExperience(experienceId));
