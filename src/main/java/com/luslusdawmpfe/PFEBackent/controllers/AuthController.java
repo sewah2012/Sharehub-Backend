@@ -101,7 +101,7 @@ public class AuthController {
 
     @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
     @PostMapping("/completeSignup")
-    ResponseEntity<String> completeRegistration(@AuthenticationPrincipal AppUser user, @RequestBody ResgistrationCompletionDto registrationCompletionDto) throws Exception {
+    ResponseEntity<AppUserDto> completeRegistration(@AuthenticationPrincipal AppUser user, @RequestBody ResgistrationCompletionDto registrationCompletionDto) throws Exception {
         return ResponseEntity.ok(userService.completeRegistration(user, registrationCompletionDto));
     }
 

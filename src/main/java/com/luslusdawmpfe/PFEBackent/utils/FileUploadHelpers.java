@@ -28,9 +28,6 @@ public class FileUploadHelpers {
 
     private String storageBucket;
 
-
-
-
     @PostConstruct
      private void initializeFbApp(){
         storageBucket = fbConfigurations.getBucketName();
@@ -71,7 +68,7 @@ public class FileUploadHelpers {
     }
 
     public Boolean deleteFile(String fileName) throws IOException {
-        initializeFbApp();
+//        initializeFbApp();
         log.info("Deleting file....");
         Bucket bucket = StorageClient.getInstance().bucket(storageBucket);
         log.info("File deleted successfully");

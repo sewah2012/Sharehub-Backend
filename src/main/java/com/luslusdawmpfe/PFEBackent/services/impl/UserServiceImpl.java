@@ -206,7 +206,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 
     @Override
-    public String completeRegistration(AppUser user, ResgistrationCompletionDto registrationCompletionDto) {
+    public AppUserDto completeRegistration(AppUser user, ResgistrationCompletionDto registrationCompletionDto) {
         user.setWebsite(registrationCompletionDto.getWebsite());
         user.setImageUrl(registrationCompletionDto.getImageUrl());
         user.setNickname(registrationCompletionDto.getNickname());
@@ -218,7 +218,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         log.info("Is user registration complete: "+completedUser.isRegistrationCompleted());
 
-        return completedUser.isRegistrationCompleted() ? "User Signup successfully completed" : "Error completing signup";
+        return mapper.mapToAppUserDto(completedUser);
     }
 
     @Override
