@@ -30,5 +30,5 @@ public interface UserService {
     List<AppUserDto> listAllUsers();
     AppUserDto getSingleUser(String username) throws EntityNotFoundException;
 
-    String completeRegistration(AppUser user, ResgistrationCompletionDto registrationCompletionDto);
+    AppUserDto completeRegistration(AppUser user, ResgistrationCompletionDto registrationCompletionDto);
 }
