@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,13 +36,13 @@ public class CommentAndLikeServiceImpl implements CommentAndLikeService {
     }
 
     @Override
-    public String deleteComment(Long commentId) throws EntityNotFoundException {
-        var comment = commentRepo.findById(commentId)
+    public String deleteComment(String commentId) throws EntityNotFoundException {
+        var comment = commentRepo.findById(UUID.fromString(commentId))
                 .orElseThrow(()->new EntityNotFoundException("Comment Doest not exist!"));
 
 
         if(SecurityCheck.isAdmin() || SecurityCheck.isOwner(comment.getAuthor().getUsername())) {
-            commentRepo.findById(commentId).ifPresent(commentRepo::delete);
+            commentRepo.findById(UUID.fromString(commentId)).ifPresent(commentRepo::delete);
         } else {
             throw new AccessDeniedException("You are neither the admin or owner of this resource");
         }
@@ -49,13 +50,13 @@ public class CommentAndLikeServiceImpl implements CommentAndLikeService {
     }
 
     @Override
-    public List<Comment> getComments(Long experienceId) {
+    public List<Comment> getComments(String experienceId) {
         return null;
     }
 
     @Override
-    public String likeAndUnlikeExperience(Long experienceId, @AuthenticationPrincipal AppUser user) throws EntityNotFoundException {
-        var x  = experienceRepo.findById(experienceId)
+    public String likeAndUnlikeExperience(String experienceId, @AuthenticationPrincipal AppUser user) throws EntityNotFoundException {
+        var x  = experienceRepo.findById(UUID.fromString(experienceId))
                 .map(exp->{
                     var likes = exp.getLikes();
                     var b = likes.contains(user.getUsername()) ? likes.remove(user.getUsername()) : likes.add(user.getUsername());

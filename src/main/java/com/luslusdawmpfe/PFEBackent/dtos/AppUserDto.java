@@ -10,12 +10,13 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppUserDto implements Serializable {
-    private  Long id;
+    private UUID id;
     private  String firstName;
     private  String lastName;
     private  String nickname;

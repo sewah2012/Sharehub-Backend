@@ -10,12 +10,13 @@ import javax.persistence.Column;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentDto {
-    private Long id;
+    private UUID id;
     private CommentAuthorDto author;
     private String description;
     private OffsetDateTime creationDate;

@@ -57,7 +57,7 @@ public class ExperienceController {
 
     @PreAuthorize("hasAnyAuthority({'APP_ADMIN','APP_USER'})")
     @GetMapping("/getOne/{experienceId}")
-    ResponseEntity<ExperienceDto> getOne(@PathVariable("experienceId") Long experienceId) throws EntityNotFoundException {
+    ResponseEntity<ExperienceDto> getOne(@PathVariable("experienceId") String experienceId) throws EntityNotFoundException {
         return ResponseEntity.ok(experienceService.getOneExperience(experienceId));
     }
 
@@ -67,7 +67,7 @@ public class ExperienceController {
     }
 
     @DeleteMapping("/delete/{experienceId}")
-    ResponseEntity<String> deleteExperience (@PathVariable("experienceId") Long experience) throws EntityNotFoundException {
+    ResponseEntity<String> deleteExperience (@PathVariable("experienceId") String experience) throws EntityNotFoundException {
         return ResponseEntity.ok(experienceService.deleteExperience(experience));
     }
 

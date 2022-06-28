@@ -7,6 +7,8 @@ import lombok.*;
 import net.bytebuddy.utility.RandomString;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,8 +27,14 @@ import java.util.stream.Collectors;
 @Entity
 public class AppUser extends DateAudit implements UserDetails, Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "id",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private UUID id;
     private String firstName;
     private String lastName;
     private String nickname;

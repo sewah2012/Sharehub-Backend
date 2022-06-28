@@ -34,12 +34,12 @@ public class RoleController {
     }
 
     @GetMapping("/getOne/{roleId}")
-    public ResponseEntity<RoleDto> getSingleRole(@PathVariable("roleId") Long roleId) throws Exception {
+    public ResponseEntity<RoleDto> getSingleRole(@PathVariable("roleId") String roleId) throws Exception {
         return ResponseEntity.ok(roleService.getSingleRole(roleId));
     }
 
     @DeleteMapping("/delete/{roleId}")
-    public ResponseEntity<String> deleteRole(@PathVariable("roleId") Long roleId) throws Exception {
+    public ResponseEntity<String> deleteRole(@PathVariable("roleId") String roleId) throws Exception {
         return ResponseEntity.ok(roleService.deleteRole(roleId));
     }
 

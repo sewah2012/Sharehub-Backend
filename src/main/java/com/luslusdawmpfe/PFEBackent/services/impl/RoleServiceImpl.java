@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,8 +30,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleDto getSingleRole(Long roleId) throws Exception {
-        return roleMapper.roleToRoleDto(roleRepo.findById(roleId).orElseThrow(()-> new Exception("Role not found")));
+    public RoleDto getSingleRole(String roleId) throws Exception {
+        return roleMapper.roleToRoleDto(roleRepo.findById(UUID.fromString(roleId)).orElseThrow(()-> new Exception("Role not found")));
 
     }
 
@@ -43,8 +44,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public String deleteRole(Long roleId) throws Exception {
-        roleRepo.delete(roleRepo.findById(roleId).orElseThrow(()-> new Exception("Role not found")));
+    public String deleteRole(String roleId) throws Exception {
+        roleRepo.delete(roleRepo.findById(UUID.fromString(roleId)).orElseThrow(()-> new Exception("Role not found")));
         return "role deleted successfully";
     }
 }

@@ -8,12 +8,13 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExperienceDto {
-    private Long id;
+    private UUID id;
     private ExperienceType experienceType;
     private String title;
     private String details;

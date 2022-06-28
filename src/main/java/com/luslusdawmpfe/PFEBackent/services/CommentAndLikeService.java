@@ -11,10 +11,10 @@ import java.util.List;
 
 public interface CommentAndLikeService {
     CommentDto addComment(AddCommentDto comment, AppUser user);
-    String deleteComment(Long CommentId) throws EntityNotFoundException;
-    List<Comment> getComments(Long experienceId);
+    String deleteComment(String CommentId) throws EntityNotFoundException;
+    List<Comment> getComments(String experienceId);
 
     //Likes and Unlike ...
-    String likeAndUnlikeExperience(Long experienceId, @AuthenticationPrincipal AppUser user) throws EntityNotFoundException;
+    String likeAndUnlikeExperience(String experienceId, @AuthenticationPrincipal AppUser user) throws EntityNotFoundException;
 
 }
