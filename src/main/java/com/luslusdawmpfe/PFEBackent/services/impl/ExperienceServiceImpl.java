@@ -95,8 +95,8 @@ public class ExperienceServiceImpl implements ExperienceService {
     }
 
     @Override
-    public ExperienceDto getOneExperience(Long experienceId) throws EntityNotFoundException {
-        return experienceRepo.findById(experienceId)
+    public ExperienceDto getOneExperience(String experienceId) throws EntityNotFoundException {
+        return experienceRepo.findById(UUID.fromString(experienceId))
                 .map(experienceMapper::mapToExperienceDto)
                 .orElseThrow(()->new EntityNotFoundException("No such experience found..."));
 
@@ -113,8 +113,8 @@ public class ExperienceServiceImpl implements ExperienceService {
     }
 
     @Override
-    public String deleteExperience(Long experienceId) throws EntityNotFoundException {
-        var x = experienceRepo.findById(experienceId).orElseThrow(()->new EntityNotFoundException("Update Failed... No such exception!"));
+    public String deleteExperience(String experienceId) throws EntityNotFoundException {
+        var x = experienceRepo.findById(UUID.fromString(experienceId)).orElseThrow(()->new EntityNotFoundException("Update Failed... No such exception!"));
         if(!SecurityCheck.isAdmin() || !SecurityCheck.isOwner(x.getAuthor().getUsername())) throw new AccessDeniedException("You are neither the admin or owner of this resource");
         var attachmentNames = x.getAttachments().stream()
                         .map(Attachement::getAttachmentName).collect(Collectors.toList());

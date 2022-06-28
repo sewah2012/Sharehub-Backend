@@ -5,14 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Builder
 @AllArgsConstructor
@@ -24,8 +23,13 @@ import java.util.Set;
 @JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="id")
 public class Experience extends DateAudit implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "id",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private UUID id;
     private ExperienceType experienceType;
     private String title;
     private String details;

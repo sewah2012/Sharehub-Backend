@@ -14,9 +14,9 @@ import java.util.List;
 public interface ExperienceService {
     ExperienceDto shareExperience(MultipartFile[] files, AddExperienceDto experience, AppUser user);
     ResponseEntity<List<ExperienceDto>> listExperiences(int pageNumber, int pageSize, String softBy);
-    ExperienceDto getOneExperience(Long experienceId) throws EntityNotFoundException;
+    ExperienceDto getOneExperience(String experienceId) throws EntityNotFoundException;
     String updateExperience(Experience experience) throws EntityNotFoundException;
-    String deleteExperience(Long experience) throws EntityNotFoundException;
+    String deleteExperience(String experience) throws EntityNotFoundException;
 
     ResponseEntity<List<ExperienceDto>> listPopularExperiences();
     ResponseEntity<List<ExperienceDto>> listLatestExperiences();

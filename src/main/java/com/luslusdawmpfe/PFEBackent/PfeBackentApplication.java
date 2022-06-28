@@ -21,7 +21,6 @@ import java.util.List;
 @PropertySource("classpath:application-${spring.profiles.active:default}.yml")
 @RequiredArgsConstructor
 public class PfeBackentApplication {
-private final AppUserRepo appUserRepo;
 	public static void main(String[] args) {
 		SpringApplication.run(PfeBackentApplication.class, args);
 	}
@@ -29,28 +28,6 @@ private final AppUserRepo appUserRepo;
 	@Bean
 	PasswordEncoder passwordEncoder(){
 		return new BCryptPasswordEncoder();
-	}
-
-	@Bean
-	CommandLineRunner buildAdminUser(){
-		return (args)-> {
-			appUserRepo.save(
-					AppUser.builder()
-							.username("Admin")
-							.password(passwordEncoder().encode("admin"))
-							.firstName("Emmanuel")
-							.lastName("Sewah")
-							.nickname("easy_SWAP")
-							.dateOfBirth(LocalDate.of(1998,8,22))
-							.address("Sidi Maarouf, Casablanca")
-							.email("sewah2012@gmail.com")
-							.website("www.emmanuelsewah.ga")
-							.isRegistrationCompleted(true)
-							.isEnabled(true)
-							.roles(List.of(new Role(null,"APP_ADMIN","App adminsitrator")))
-							.build()
-			);
-		};
 	}
 
 	@Bean

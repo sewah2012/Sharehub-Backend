@@ -6,12 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
+
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class AttachementDto {
-    private Long id;
+    private UUID id;
     private AttachementType type;
     private String attachmentName;
     private String attachmentUrl;

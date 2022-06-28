@@ -1,8 +1,11 @@
 package com.luslusdawmpfe.PFEBackent.entities;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -13,8 +16,13 @@ import javax.persistence.*;
 @Entity
 public class Role {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Long id;
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "id",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private UUID id;
 
     @Column
     private String name;
