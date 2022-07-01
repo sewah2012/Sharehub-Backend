@@ -2,6 +2,7 @@ package com.luslusdawmpfe.PFEBackent.services.impl;
 import com.luslusdawmpfe.PFEBackent.dtos.AddExperienceDto;
 import com.luslusdawmpfe.PFEBackent.dtos.ApiResponseDto;
 import com.luslusdawmpfe.PFEBackent.dtos.ExperienceDto;
+import com.luslusdawmpfe.PFEBackent.dtos.UpdateExperienceRequest;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.entities.Attachement;
 import com.luslusdawmpfe.PFEBackent.entities.AttachementType;
@@ -103,12 +104,17 @@ public class ExperienceServiceImpl implements ExperienceService {
     }
 
     @Override
-    public String updateExperience(Experience experience) throws EntityNotFoundException {
-        var x = experienceRepo.findById(experience.getId())
+    public String updateExperience(UpdateExperienceRequest request) throws EntityNotFoundException {
+        var x = experienceRepo.findById(request.getId())
         .orElseThrow(()->new EntityNotFoundException("Update Failed... No such exception!"));
 
         if(!SecurityCheck.isAdmin() || !SecurityCheck.isOwner(x.getAuthor().getUsername())) throw new AccessDeniedException("You are neither the admin or owner of this resource");
-        experienceRepo.save(experience);
+
+        x.setExperienceType(request.getExperienceType());
+        x.setTitle(request.getTitle());
+        x.setDetails(request.getDetails());
+
+        experienceRepo.save(x);
         return "Update completed successfully";
     }
 

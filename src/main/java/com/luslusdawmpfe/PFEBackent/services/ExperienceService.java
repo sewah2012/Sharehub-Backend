@@ -2,6 +2,7 @@ package com.luslusdawmpfe.PFEBackent.services;
 
 import com.luslusdawmpfe.PFEBackent.dtos.AddExperienceDto;
 import com.luslusdawmpfe.PFEBackent.dtos.ExperienceDto;
+import com.luslusdawmpfe.PFEBackent.dtos.UpdateExperienceRequest;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.entities.Experience;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
@@ -15,7 +16,7 @@ public interface ExperienceService {
     ExperienceDto shareExperience(MultipartFile[] files, AddExperienceDto experience, AppUser user);
     ResponseEntity<List<ExperienceDto>> listExperiences(int pageNumber, int pageSize, String softBy);
     ExperienceDto getOneExperience(String experienceId) throws EntityNotFoundException;
-    String updateExperience(Experience experience) throws EntityNotFoundException;
+    String updateExperience(UpdateExperienceRequest request) throws EntityNotFoundException;
     String deleteExperience(String experience) throws EntityNotFoundException;
 
     ResponseEntity<List<ExperienceDto>> listPopularExperiences();

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luslusdawmpfe.PFEBackent.dtos.AddExperienceDto;
 import com.luslusdawmpfe.PFEBackent.dtos.ExperienceDto;
+import com.luslusdawmpfe.PFEBackent.dtos.UpdateExperienceRequest;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.entities.Experience;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
@@ -21,9 +22,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/experience")
+@PreAuthorize("isAuthenticated()")
 public class ExperienceController {
-    @Autowired
-    private ExperienceService experienceService;
+
+    private final ExperienceService experienceService;
 
     @PreAuthorize("hasAnyAuthority({'APP_ADMIN','APP_USER'})")
     @PostMapping(value="/add")
@@ -61,9 +63,11 @@ public class ExperienceController {
         return ResponseEntity.ok(experienceService.getOneExperience(experienceId));
     }
 
-    @PutMapping("/edit")
-    ResponseEntity<String> updateExperience(@RequestBody Experience experience) throws EntityNotFoundException {
-        return ResponseEntity.ok(experienceService.updateExperience(experience));
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/editExperience")
+    public ResponseEntity<Object> editExperience(@RequestBody UpdateExperienceRequest request) throws EntityNotFoundException {
+        return ResponseEntity.ok(experienceService.updateExperience(request));
     }
 
     @DeleteMapping("/delete/{experienceId}")
