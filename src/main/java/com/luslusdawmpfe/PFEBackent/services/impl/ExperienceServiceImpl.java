@@ -6,9 +6,7 @@ import com.luslusdawmpfe.PFEBackent.dtos.UpdateExperienceRequest;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.entities.Attachement;
 import com.luslusdawmpfe.PFEBackent.entities.AttachementType;
-import com.luslusdawmpfe.PFEBackent.entities.Experience;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
-import com.luslusdawmpfe.PFEBackent.exceptions.IllegalFileEextensionException;
 import com.luslusdawmpfe.PFEBackent.mappers.AttachementMapper;
 import com.luslusdawmpfe.PFEBackent.mappers.ExperienceMapper;
 import com.luslusdawmpfe.PFEBackent.repos.AppUserRepo;
@@ -20,15 +18,12 @@ import com.luslusdawmpfe.PFEBackent.utils.FileUploadHelpers;
 import com.luslusdawmpfe.PFEBackent.utils.SecurityCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -104,7 +99,7 @@ public class ExperienceServiceImpl implements ExperienceService {
     }
 
     @Override
-    public String updateExperience(UpdateExperienceRequest request) throws EntityNotFoundException {
+    public ExperienceDto updateExperience(UpdateExperienceRequest request) throws EntityNotFoundException {
         var x = experienceRepo.findById(request.getId())
         .orElseThrow(()->new EntityNotFoundException("Update Failed... No such exception!"));
 
@@ -114,8 +109,8 @@ public class ExperienceServiceImpl implements ExperienceService {
         x.setTitle(request.getTitle());
         x.setDetails(request.getDetails());
 
-        experienceRepo.save(x);
-        return "Update completed successfully";
+        return experienceMapper.mapToExperienceDto(experienceRepo.save(x));
+
     }
 
     @Override
