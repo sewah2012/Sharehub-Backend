@@ -35,6 +35,13 @@ public class StorageServiceImpl implements StorageService {
     public ApiResponseDto uploadImage(MultipartFile multipartFile) throws Exception {
 
         var rsp =  uploadOneImage(multipartFile);
+//        var att = attachementRepo.save(
+//                Attachement.builder()
+//                        .attachmentName((String)rsp.get("filename"))
+//                        .attachmentUrl((String)rsp.get("url"))
+//                        .type(AttachementType.IMAGE)
+//                        .build()
+//        );
         log.info("RESPONSE {}",new Gson().toJson(rsp));
         return ApiResponseDto.builder().response(rsp).build();
     }

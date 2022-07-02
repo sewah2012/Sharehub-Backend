@@ -8,6 +8,7 @@ import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
 import com.luslusdawmpfe.PFEBackent.mappers.AppUserMapper;
 import com.luslusdawmpfe.PFEBackent.mappers.RoleMapper;
 import com.luslusdawmpfe.PFEBackent.repos.AppUserRepo;
+import com.luslusdawmpfe.PFEBackent.repos.AttachementRepo;
 import com.luslusdawmpfe.PFEBackent.repos.RoleRepo;
 import com.luslusdawmpfe.PFEBackent.services.UserService;
 import com.luslusdawmpfe.PFEBackent.utils.EmailSender;
@@ -48,6 +49,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private EmailSender emailSender;
     @Autowired
     private RoleRepo roleRepo;
+
+    @Autowired
+    private AttachementRepo attachementRepo;
 
     final String DEFAULT_APP_USER_ROLE_PASSWORD = "sharehub123";
 
@@ -204,6 +208,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public AppUserDto completeRegistration(AppUser user, ResgistrationCompletionDto registrationCompletionDto) {
+//        var attach = attachementRepo.findByAttachmentName(registrationCompletionDto.getImageUrl().getAttachmentName())
+//                .orElse(
+//                        attachementRepo.save(registrationCompletionDto.getImageUrl())
+//                );
+//        log.info(attach.getAttachmentName());
         user.setWebsite(registrationCompletionDto.getWebsite());
         user.setImageUrl(registrationCompletionDto.getImageUrl());
         user.setNickname(registrationCompletionDto.getNickname());
@@ -227,10 +236,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 
     @Override
-    public String updateUser(AppUser user, UpdateUserRequest registrationCompletionDto) {
+    public String updateUser(AppUser user, UpdateUserRequest registrationCompletionDto) throws EntityNotFoundException {
+        var att = attachementRepo.findByAttachmentName(registrationCompletionDto.getImageUrl().getAttachmentName()).orElseThrow(
+                ()->new EntityNotFoundException("Image Does not exist")
+        );
 
         user.setWebsite(registrationCompletionDto.getWebsite());
-        user.setImageUrl(registrationCompletionDto.getImageUrl());
+        user.setImageUrl(att);
         user.setNickname(registrationCompletionDto.getNickname());
         user.setDateOfBirth(registrationCompletionDto.getDateOfBirth());
         user.setAddress(registrationCompletionDto.getAddress());

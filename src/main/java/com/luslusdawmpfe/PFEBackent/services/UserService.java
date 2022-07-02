@@ -29,5 +29,5 @@ public interface UserService {
 
     AppUserDto completeRegistration(AppUser user, ResgistrationCompletionDto registrationCompletionDto);
 
-    String updateUser(AppUser user, UpdateUserRequest registrationCompletionDto);
+    String updateUser(AppUser user, UpdateUserRequest registrationCompletionDto) throws EntityNotFoundException;
 }
