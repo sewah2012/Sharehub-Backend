@@ -1,9 +1,6 @@
 package com.luslusdawmpfe.PFEBackent.services.impl;
 
-import com.luslusdawmpfe.PFEBackent.dtos.AppUserDto;
-import com.luslusdawmpfe.PFEBackent.dtos.CreateUserDto;
-import com.luslusdawmpfe.PFEBackent.dtos.ResgistrationCompletionDto;
-import com.luslusdawmpfe.PFEBackent.dtos.SignupDto;
+import com.luslusdawmpfe.PFEBackent.dtos.*;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.entities.Role;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityAlreadyExistException;
@@ -226,6 +223,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
            return Optional.of(appUserRepo.findUserByUsername(username))
                     .orElseThrow(()->new UsernameNotFoundException("User not found!"));
 
+    }
+
+
+    @Override
+    public String updateUser(AppUser user, UpdateUserRequest registrationCompletionDto) {
+
+        user.setWebsite(registrationCompletionDto.getWebsite());
+        user.setImageUrl(registrationCompletionDto.getImageUrl());
+        user.setNickname(registrationCompletionDto.getNickname());
+        user.setDateOfBirth(registrationCompletionDto.getDateOfBirth());
+        user.setAddress(registrationCompletionDto.getAddress());
+        user.setRegistrationCompleted(true);
+
+        var completedUser = appUserRepo.save(user);
+
+        return "user details successfully modified";
     }
 
     private  String generateCode() {

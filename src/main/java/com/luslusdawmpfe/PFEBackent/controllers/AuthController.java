@@ -105,6 +105,12 @@ public class AuthController {
         return ResponseEntity.ok(userService.completeRegistration(user, registrationCompletionDto));
     }
 
+    @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
+    @PutMapping("/updateUser")
+    ResponseEntity<Object> updateUser(@AuthenticationPrincipal AppUser user, @RequestBody UpdateUserRequest registrationCompletionDto) throws Exception {
+        return ResponseEntity.ok(userService.updateUser(user, registrationCompletionDto));
+    }
+
 
     private String getSiteUrl(HttpServletRequest request){
         String siteUrl = request.getRequestURL().toString();

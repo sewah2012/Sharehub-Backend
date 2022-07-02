@@ -3,8 +3,11 @@ package com.luslusdawmpfe.PFEBackent.services.impl;
 import com.google.gson.Gson;
 import com.luslusdawmpfe.PFEBackent.dtos.ApiResponseDto;
 import com.luslusdawmpfe.PFEBackent.dtos.AttachementDto;
+import com.luslusdawmpfe.PFEBackent.entities.Attachement;
 import com.luslusdawmpfe.PFEBackent.entities.AttachementType;
+import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
 import com.luslusdawmpfe.PFEBackent.exceptions.IllegalFileEextensionException;
+import com.luslusdawmpfe.PFEBackent.repos.AttachementRepo;
 import com.luslusdawmpfe.PFEBackent.services.StorageService;
 import com.luslusdawmpfe.PFEBackent.utils.FileUploadHelpers;
 //import com.luslusdawmpfe.PFEBackent.utils.fileUploadHelpers;
@@ -25,38 +28,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class StorageServiceImpl implements StorageService {
+    private final AttachementRepo attachementRepo;
     @Autowired
     private FileUploadHelpers fileUploadHelpers;
     @Override
     public ApiResponseDto uploadImage(MultipartFile multipartFile) throws Exception {
 
-        //TODO: check if image size is not more than 2mb
-
-        var fileExtension = fileUploadHelpers.getExtension(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-        Set<String> acceptedFileExtension =Set.of(".png",".jpg",".jpeg");
-        if(!acceptedFileExtension.contains(fileExtension)) throw new IllegalFileEextensionException("Invalid File Type: Please use an image of either "+acceptedFileExtension +"extension");
-        String filename;
-        String TEMP_URL;
-        try {
-            filename = multipartFile.getOriginalFilename();
-            assert filename != null; //me giving java assurance that file name will always be available
-            filename = UUID.randomUUID().toString().concat(fileExtension);
-
-            File file = fileUploadHelpers.convertToFile(multipartFile,filename);
-            TEMP_URL = fileUploadHelpers.uploadFile(file, filename);
-            var x = file.delete();
-
-            Map<String, Object> rsp = new HashMap<>();
-            log.info("File name uploaded: "+filename);
-            rsp.put("filename", filename);
-            rsp.put("url", TEMP_URL);
-            rsp.put("type", AttachementType.IMAGE);
-
-            log.info("RESPONSE {}",new Gson().toJson(rsp));
-            return ApiResponseDto.builder().response(rsp).build();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        var rsp =  uploadOneImage(multipartFile);
+        log.info("RESPONSE {}",new Gson().toJson(rsp));
+        return ApiResponseDto.builder().response(rsp).build();
     }
 
     @Override
@@ -141,6 +121,62 @@ public class StorageServiceImpl implements StorageService {
 
         return ApiResponseDto.builder().response(rsp).build();
 
+    }
+
+
+    @Override
+    public ApiResponseDto changeProfilePic(MultipartFile newPic, String attachmentName) throws IllegalFileEextensionException, IOException {
+       var rsp =  uploadOneImage(newPic);
+
+        var att = attachementRepo.findByAttachmentName(attachmentName)
+                .orElse(
+                        Attachement.builder()
+                                .attachmentName((String)rsp.get("filename"))
+                                .attachmentUrl((String)rsp.get("url"))
+                                .type(AttachementType.IMAGE)
+                                .build()
+                );
+
+        //update the attachement
+        att.setAttachmentName((String)rsp.get("filename"));
+        att.setAttachmentUrl((String)rsp.get("url"));
+        attachementRepo.save(att);
+
+        //delete the old image from firebase
+        var isDeleted= fileUploadHelpers.deleteFile(attachmentName);
+
+
+
+        return ApiResponseDto.builder().response(rsp).build();
+    }
+
+
+    private Map<String, Object> uploadOneImage(MultipartFile multipartFile) throws IllegalFileEextensionException {
+        var fileExtension = fileUploadHelpers.getExtension(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        Set<String> acceptedFileExtension =Set.of(".png",".jpg",".jpeg");
+        if(!acceptedFileExtension.contains(fileExtension)) throw new IllegalFileEextensionException("Invalid File Type: Please use an image of either "+acceptedFileExtension +"extension");
+        String filename;
+        String TEMP_URL;
+        try {
+            filename = multipartFile.getOriginalFilename();
+            assert filename != null; //me giving java assurance that file name will always be available
+            filename = UUID.randomUUID().toString().concat(fileExtension);
+
+            File file = fileUploadHelpers.convertToFile(multipartFile,filename);
+            TEMP_URL = fileUploadHelpers.uploadFile(file, filename);
+            var x = file.delete();
+
+            Map<String, Object> rsp = new HashMap<>();
+            log.info("File name uploaded: "+filename);
+            rsp.put("filename", filename);
+            rsp.put("url", TEMP_URL);
+            rsp.put("type", AttachementType.IMAGE);
+
+            return rsp;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

@@ -10,6 +10,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -35,4 +36,12 @@ public class StorageController {
     ResponseEntity<ApiResponseDto> storeImage(@RequestParam("fileName") String filename) throws Exception {
         return ResponseEntity.ok(service.deleteResource(filename));
     }
+
+    @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
+    @PutMapping("/changeProfilePic")
+    ResponseEntity<Object> changeProfileImage(@RequestParam("newProfilePic") MultipartFile newPic, @RequestParam("attachmentName") String attachmentName) throws IllegalFileEextensionException, IOException {
+        return ResponseEntity.ok(service.changeProfilePic(newPic, attachmentName));
+    }
+
+
 }

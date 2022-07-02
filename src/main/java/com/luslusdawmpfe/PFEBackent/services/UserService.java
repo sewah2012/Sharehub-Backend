@@ -1,8 +1,5 @@
 package com.luslusdawmpfe.PFEBackent.services;
-import com.luslusdawmpfe.PFEBackent.dtos.AppUserDto;
-import com.luslusdawmpfe.PFEBackent.dtos.CreateUserDto;
-import com.luslusdawmpfe.PFEBackent.dtos.ResgistrationCompletionDto;
-import com.luslusdawmpfe.PFEBackent.dtos.SignupDto;
+import com.luslusdawmpfe.PFEBackent.dtos.*;
 import com.luslusdawmpfe.PFEBackent.entities.AppUser;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityAlreadyExistException;
 import com.luslusdawmpfe.PFEBackent.exceptions.EntityNotFoundException;
@@ -31,4 +28,6 @@ public interface UserService {
     AppUserDto getSingleUser(String username) throws EntityNotFoundException;
 
     AppUserDto completeRegistration(AppUser user, ResgistrationCompletionDto registrationCompletionDto);
+
+    String updateUser(AppUser user, UpdateUserRequest registrationCompletionDto);
 }
