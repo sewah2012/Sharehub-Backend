@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
     String signup(SignupDto user, String siteUrl) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException, EntityAlreadyExistException;
@@ -32,4 +33,7 @@ public interface UserService {
     AppUserDto completeRegistration(AppUser user, ResgistrationCompletionDto registrationCompletionDto);
 
     String updateUser(AppUser user, UpdateUserRequest registrationCompletionDto) throws EntityNotFoundException;
+
+
+    String newPassword(Map<String, String> newPassword) throws EntityNotFoundException;
 }

@@ -27,6 +27,7 @@ public class AppUserDto implements Serializable {
     private Attachement imageUrl;
     private  String username;
     private boolean isRegistrationCompleted;
+    private boolean resetPassword;
     private  List<Role> roles;
 
 }

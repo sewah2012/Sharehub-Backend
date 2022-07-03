@@ -72,6 +72,8 @@ public class AppUser extends DateAudit implements UserDetails, Serializable {
 
     @Builder.Default
     private boolean isRegistrationCompleted = false;
+    @Builder.Default
+    private boolean resetPassword = false;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles
