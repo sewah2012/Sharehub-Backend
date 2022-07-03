@@ -73,10 +73,10 @@ public class AuthController {
     }
 
     //TODO: ResetPassword
-    @AppAdminOrOwner
+    @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
     @GetMapping("/resetPassword/{username}")
-    ResponseEntity<String> resetPassword(@PathVariable String username) throws MessagingException, UnsupportedEncodingException, EntityNotFoundException {
-        return ResponseEntity.ok(userService.resetPassword(username));
+    ResponseEntity<String> resetPassword(@PathVariable String username, @AuthenticationPrincipal AppUser user) throws MessagingException, UnsupportedEncodingException, EntityNotFoundException {
+        return ResponseEntity.ok(userService.resetPassword(username, user));
     }
 
     @PreAuthorize("hasAnyAuthority('APP_ADMIN')")

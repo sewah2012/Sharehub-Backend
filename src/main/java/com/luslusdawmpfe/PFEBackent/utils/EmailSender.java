@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,7 @@ public class EmailSender {
     private final String website = "http://localhost:3000/";
 
 
-
+@Async
   public void sendVerificationEmail(AppUser user, String siteUrl) throws MessagingException, UnsupportedEncodingException {
       final String emailTemplate = "Dear [[name]],<br>"
               + "Please find below your Sharehub email verification code:<br>"
@@ -60,6 +61,7 @@ public class EmailSender {
 
   }
 
+  @Async
   public void sendUserCredentials (AppUser user, String defaultPassword) throws MessagingException, UnsupportedEncodingException {
         final String emailTemplate = "Dear [[name]],<br>"
                 + "A new Sharehub account has successfully been created for you:<br>"
@@ -94,6 +96,7 @@ public class EmailSender {
         log.info("Email send successfully: "+content);
     }
 
+    @Async
     public void sendResetPasswordLink (AppUser user) throws MessagingException, UnsupportedEncodingException {
         final String emailTemplate = "Dear [[name]],<br><br>"
                 + "Please find below your Sharehub password reset code:<br>"
@@ -123,6 +126,7 @@ public class EmailSender {
         log.info("Email send successfully: "+content);
     }
 
+    @Async
     public void sendResetPasswordCredentials(AppUser user, String defaultPassword) throws MessagingException, UnsupportedEncodingException {
         final String emailTemplate = "Dear [[name]],<br>"
                 + "Your share-hub password has been reset successfully:<br>"

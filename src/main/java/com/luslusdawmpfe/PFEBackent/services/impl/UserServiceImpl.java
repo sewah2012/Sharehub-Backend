@@ -12,13 +12,13 @@ import com.luslusdawmpfe.PFEBackent.repos.AttachementRepo;
 import com.luslusdawmpfe.PFEBackent.repos.RoleRepo;
 import com.luslusdawmpfe.PFEBackent.services.UserService;
 import com.luslusdawmpfe.PFEBackent.utils.EmailSender;
+import com.luslusdawmpfe.PFEBackent.utils.SecurityCheck;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -176,19 +176,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public String resetPassword(String username) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException {
+    public String resetPassword(String username, AppUser user) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException {
         var randomPassword = RandomString.make(8);
-        var user = Optional.of(appUserRepo.findUserByUsername(username))
-                .map(
-                        (u)->{
-                            u.setIsEnabled(true);
-                            u.setPassword(passwordEncoder.encode(randomPassword));
-                            return appUserRepo.save(u);
-                        }
-                )
-                .orElseThrow( ()->new EntityNotFoundException("User not found!"));
+        var au = Optional.of(appUserRepo.findUserByUsername(username)).orElseThrow(()->new EntityNotFoundException("no such entity"));
+        if(!SecurityCheck.isAdmin() && !SecurityCheck.isOwner(au.getUsername())){
+            throw new AccessDeniedException("You are neither the admin or owner of this resource");
+        }
+            au.setIsEnabled(true);
+            au.setPassword(passwordEncoder.encode(randomPassword));
+            appUserRepo.save(au);
 
-        emailSender.sendResetPasswordCredentials(user, randomPassword);
+        emailSender.sendResetPasswordCredentials(au, randomPassword);
 
         return "Password successfully reset. An email with has been sent to your email.";
     }

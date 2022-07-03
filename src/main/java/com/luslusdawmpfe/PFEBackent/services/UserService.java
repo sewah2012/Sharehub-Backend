@@ -22,7 +22,9 @@ public interface UserService {
 
     String deleteUser(String username) throws EntityNotFoundException;
 
-    String resetPassword(String username) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException;
+    String resetPassword(String username, AppUser user) throws EntityNotFoundException, MessagingException, UnsupportedEncodingException;
+
+
 
     List<AppUserDto> listAllUsers();
     AppUserDto getSingleUser(String username) throws EntityNotFoundException;
