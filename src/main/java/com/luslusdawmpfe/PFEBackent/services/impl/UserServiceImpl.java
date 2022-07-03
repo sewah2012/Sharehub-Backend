@@ -29,6 +29,7 @@ import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -139,6 +140,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     log.info("Found user: "+u.getVerificationCode());
                     u.setVerificationCode(null);
                     u.setIsEnabled(true);
+                    u.setResetPassword(true);
                     u.setPassword(passwordEncoder.encode(randomPassword));
                     return appUserRepo.save(u);
                 }
@@ -183,6 +185,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new AccessDeniedException("You are neither the admin or owner of this resource");
         }
             au.setIsEnabled(true);
+            au.setResetPassword(true);
             au.setPassword(passwordEncoder.encode(randomPassword));
             appUserRepo.save(au);
 
@@ -249,6 +252,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         var completedUser = appUserRepo.save(user);
 
         return "user details successfully modified";
+    }
+
+    @Override
+    public String newPassword(Map<String, String> newPassword) throws EntityNotFoundException {
+        var username = newPassword.get("username");
+        var password = newPassword.get("password");
+
+        var user = Optional.of(appUserRepo.findUserByUsername(username)).orElseThrow( ()->new EntityNotFoundException("No such user.."));
+        user.setPassword(passwordEncoder.encode(password));
+        user.setResetPassword(false);
+
+        appUserRepo.save(user);
+
+
+        return "password successully saved";
     }
 
     private  String generateCode() {

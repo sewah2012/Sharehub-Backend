@@ -111,6 +111,11 @@ public class AuthController {
         return ResponseEntity.ok(userService.updateUser(user, registrationCompletionDto));
     }
 
+    @PreAuthorize("hasAnyAuthority({'APP_USER','APP_ADMIN'})")
+    @PostMapping("/newPassword")
+    ResponseEntity<Object> newPassword(@RequestBody Map<String, String> newPassword) throws EntityNotFoundException {
+        return ResponseEntity.ok(userService.newPassword(newPassword));
+    }
 
     private String getSiteUrl(HttpServletRequest request){
         String siteUrl = request.getRequestURL().toString();
