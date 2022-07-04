@@ -20,7 +20,26 @@ services:
     ports:
       - "5050:80"
 
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+    volumes:
+      - 'es_data:/usr/share/elasticsearch/data'
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - bootstrap.memory_lock=true
+      - cluster.name=sharehubcluster
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.type=single-node"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
   elastichq:
+    container_name: elastichq
     image: elastichq/elasticsearch-hq
     ports:
       - "5000:5000"
@@ -30,6 +49,7 @@ services:
       - elasticsearch
 
   logstash:
+    container_name: logstash
     image: docker.elastic.co/logstash/logstash:7.0.0
     volumes:
       - ./logstash/config-dir:/usr/share/logstash/config-dir
@@ -43,6 +63,7 @@ services:
       - elasticsearch
 
   kibana:
+    container_name: kibana
     image: docker.elastic.co/kibana/kibana:7.2.0
     ports:
       - "5601:5601"
@@ -52,5 +73,6 @@ services:
       - elasticsearch
     depends_on:
       - elasticsearch
-
+volumes:
+  es_data:
 
