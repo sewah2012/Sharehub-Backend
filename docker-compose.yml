@@ -19,3 +19,38 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
       - "5050:80"
+
+  elastichq:
+    image: elastichq/elasticsearch-hq
+    ports:
+      - "5000:5000"
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.0.0
+    volumes:
+      - ./logstash/config-dir:/usr/share/logstash/config-dir
+      - ./logstash/drivers/:/usr/share/logstash/drivers
+    command: logstash -f /usr/share/logstash/config-dir/logstash.conf
+    env_file:
+      - core.env
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.2.0
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEACH_URL=http://elasticsearch:9200
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+
+
