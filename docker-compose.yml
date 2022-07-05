@@ -55,8 +55,12 @@ services:
       - ./logstash/config-dir:/usr/share/logstash/config-dir
       - ./logstash/drivers/:/usr/share/logstash/drivers
     command: logstash -f /usr/share/logstash/config-dir/logstash.conf
-    env_file:
-      - core.env
+#    env_file:
+#      - core.env
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: share_hub_db
     links:
       - elasticsearch
     depends_on:
