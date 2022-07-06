@@ -20,4 +20,8 @@ public interface ExperienceService {
     ResponseEntity<List<ExperienceDto>> listPopularExperiences();
     ResponseEntity<List<ExperienceDto>> listLatestExperiences();
 
+    List<ExperienceDto> searchExeriences( String searchTerm);
+
+
+
 }

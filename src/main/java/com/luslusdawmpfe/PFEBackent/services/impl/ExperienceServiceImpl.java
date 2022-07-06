@@ -152,4 +152,13 @@ public class ExperienceServiceImpl implements ExperienceService {
     public ResponseEntity<List<ExperienceDto>> listLatestExperiences() {
         return null;
     }
+
+    @Override
+    public List<ExperienceDto> searchExeriences(String searchTerm) {
+        return experienceRepo.findMatching(searchTerm)
+                .stream()
+                .map(experienceMapper::mapToExperienceDto)
+                .collect(Collectors.toList());
+
+    }
 }

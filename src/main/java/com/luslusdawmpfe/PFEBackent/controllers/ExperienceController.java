@@ -75,4 +75,10 @@ public class ExperienceController {
         return ResponseEntity.ok(experienceService.deleteExperience(experience));
     }
 
+    @PreAuthorize("hasAnyAuthority({'APP_ADMIN','APP_USER'})")
+    @GetMapping("/search")
+    ResponseEntity<Object> searchExperience(@RequestParam("term") String term){
+        return ResponseEntity.ok(experienceService.searchExeriences(term));
+    }
+
 }
