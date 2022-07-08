@@ -32,6 +32,7 @@ public class Experience extends DateAudit implements Serializable {
     private UUID id;
     private ExperienceType experienceType;
     private String title;
+    @Column(columnDefinition="TEXT")
     private String details;
 
     @ManyToOne
