@@ -13,8 +13,8 @@ public interface ExperienceRepo extends JpaRepository<Experience, UUID> {
     List<Experience> findPopular();
 
     @Query(value = "SELECT e FROM Experience e WHERE "
-        +"CONCAT(e.title, e.details)"
-            +"LIKE %?1%"
+        +"CONCAT(lower(e.title), lower(e.details))"
+            +"LIKE CONCAT('%',lower(?1),'%')"
     )
     List<Experience> findMatching(String term);
 
